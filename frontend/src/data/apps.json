@@ -1,32 +1,22 @@
 [
-  {
-    "app_id": 1,
-    "app_name": "ВКонтакте",
-    "app_categorie": "Соцсети",
-    "popular": true,
-    "editorsChoice": false,
-    "recent": false,
-    "rating": 4.3,
-    "badge": "ТОП"
-  },
-  {
-    "app_id": 2,
-    "app_name": "MAX",
-    "app_categorie": "Общение",
-    "popular": true,
-    "editorsChoice": true,
-    "recent": false,
-    "rating": 4.5,
-    "badge": "ХИТ"
-  },
-  {
-    "app_id": 3,
-    "app_name": "Telegram",
-    "app_categorie": "Мессенджеры",
-    "popular": false,
-    "editorsChoice": true,
-    "recent": true,
-    "rating": 4.1,
-    "badge": "ТОП"
-  }
+  { "app_id": 1, "app_name": "ВКонтакте", "app_categorie": "Социальные сети", "popular": true, "editorsChoice": false, "recent": false, "rating": 4.3 },
+  { "app_id": 2, "app_name": "Telegram", "app_categorie": "Мессенджеры", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.1 },
+  { "app_id": 3, "app_name": "MAX", "app_categorie": "Общение", "popular": true, "editorsChoice": true, "recent": false, "rating": 4.5 },
+  { "app_id": 4, "app_name": "Сбербанк Онлайн", "app_categorie": "Финансы", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.8 },
+  { "app_id": 5, "app_name": "Яндекс Погода", "app_categorie": "Погода", "popular": false, "editorsChoice": true, "recent": false, "rating": 4.4 },
+  { "app_id": 6, "app_name": "AliExpress", "app_categorie": "Покупки", "popular": false, "editorsChoice": false, "recent": false, "rating": 3.4 },
+  { "app_id": 7, "app_name": "Wildberries", "app_categorie": "Покупки", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.8 },
+  { "app_id": 8, "app_name": "Авито", "app_categorie": "Объявления", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.7 },
+  { "app_id": 9, "app_name": "Мегафон", "app_categorie": "Инструменты", "popular": false, "editorsChoice": false, "recent": false, "rating": 3.4 },
+  { "app_id": 10, "app_name": "Почта России", "app_categorie": "Госуслуги", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.0 },
+  { "app_id": 11, "app_name": "Юла", "app_categorie": "Объявления", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.1 },
+  { "app_id": 12, "app_name": "Пятёрочка", "app_categorie": "Покупки", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.2 },
+  { "app_id": 13, "app_name": "Лента", "app_categorie": "Покупки", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.1 },
+  { "app_id": 14, "app_name": "Едадил", "app_categorie": "Скидки", "popular": true, "editorsChoice": false, "recent": false, "rating": 4.6 },
+  { "app_id": 15, "app_name": "Spotify", "app_categorie": "Музыка", "popular": true, "editorsChoice": true, "recent": false, "rating": 4.5 },
+  { "app_id": 16, "app_name": "Яндекс Музыка", "app_categorie": "Музыка", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.6 },
+  { "app_id": 17, "app_name": "2ГИС", "app_categorie": "Навигация", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.7 },
+  { "app_id": 18, "app_name": "Maps.me", "app_categorie": "Навигация", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.4 },
+  { "app_id": 19, "app_name": "ЮMoney", "app_categorie": "Финансы", "popular": false, "editorsChoice": false, "recent": false, "rating": 4.2 },
+  { "app_id": 20, "app_name": "OZON", "app_categorie": "Покупки", "popular": true, "editorsChoice": false, "recent": true, "rating": 4.5 }
 ]
