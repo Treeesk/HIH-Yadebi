@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"ginserv/internal/config"
+	"internal/config"
 	_ "github.com/lib/pq"
 	"log"
 )
