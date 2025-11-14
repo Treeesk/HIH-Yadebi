@@ -1,26 +1,32 @@
 [
   {
     "app_id": 1,
-    "app_name": "Clash Royale",
-    "app_categorie": "Шутер",
+    "app_name": "ВКонтакте",
+    "app_categorie": "Соцсети",
     "popular": true,
-    "editorsChoice": true,
-    "recent": false
+    "editorsChoice": false,
+    "recent": false,
+    "rating": 4.3,
+    "badge": "ТОП"
   },
   {
     "app_id": 2,
-    "app_name": "Сбербанк Онлайн",
-    "app_categorie": "Финансы",
+    "app_name": "MAX",
+    "app_categorie": "Общение",
     "popular": true,
-    "editorsChoice": false,
-    "recent": true
+    "editorsChoice": true,
+    "recent": false,
+    "rating": 4.5,
+    "badge": "ХИТ"
   },
   {
     "app_id": 3,
-    "app_name": "Яндекс Погода",
-    "app_categorie": "Погода",
+    "app_name": "Telegram",
+    "app_categorie": "Мессенджеры",
     "popular": false,
     "editorsChoice": true,
-    "recent": false
+    "recent": true,
+    "rating": 4.1,
+    "badge": "ТОП"
   }
 ]

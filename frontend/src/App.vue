@@ -3,10 +3,9 @@
 </template>
 
 <style>
-body {
-  font-family: 'Inter', sans-serif;
-  background: white;
-  margin: 0;
-  padding: 0;
+html, body, #app {
+  background: #ffffff !important;
+  color: #000000 !important;
 }
 </style>
+
