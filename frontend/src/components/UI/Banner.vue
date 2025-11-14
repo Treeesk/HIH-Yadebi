@@ -1,14 +1,15 @@
 <template>
   <div
-      class="w-full h-40 rounded-3xl bg-gradient-to-r from-indigo-500 to-blue-500
-           flex items-center justify-center shadow-md mt-6"
+      class="w-full h-40 mt-6 rounded-3xl
+           bg-gradient-to-br from-indigo-500 to-blue-500
+           shadow-lg flex items-center justify-center"
   >
-    <p class="text-white text-lg font-semibold">{{ text }}</p>
+    <p class="text-white text-xl font-semibold px-4 text-center">
+      {{ text }}
+    </p>
   </div>
 </template>
 
 <script>
-export default {
-  props: ["text"]
-};
+export default { props: ["text"] }
 </script>

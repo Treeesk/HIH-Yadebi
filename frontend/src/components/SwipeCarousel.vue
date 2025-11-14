@@ -6,10 +6,10 @@
       @touchend="endSwipe"
   >
     <div
-        class="flex transition-transform duration-500 ease-[cubic-bezier(.22,.61,.36,1)]"
+        class="flex transition-transform duration-500 ease-[cubic-bezier(.16,.84,.44,1)]"
         :style="{ transform: `translateX(-${currentPage * 100}%)` }"
     >
-      <!-- каждая страница по 3 приложения -->
+    <!-- каждая страница по 3 приложения -->
       <div
           v-for="(group, index) in pages"
           :key="index"
