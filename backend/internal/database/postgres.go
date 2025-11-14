@@ -1,6 +1,7 @@
 package database
 
 import (
+	"backend/internal/config"
 	"database/sql"
 	"fmt"
 	"log"
