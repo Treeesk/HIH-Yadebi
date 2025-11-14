@@ -1,56 +1,45 @@
 <template>
-  <div class="mx-auto px-4 py-4
-              max-w-[480px]
-              md:max-w-3xl
-              lg:max-w-5xl">
+  <div class="mx-auto px-4 py-4 w-full max-w-[420px]">
 
-    <!-- Поиск -->
     <SearchBar v-model="query" />
 
-    <!-- Баннер -->
     <Banner text="Игра которую мы предлагаем" />
 
-    <!-- Популярное -->
     <SectionBlock title="Категория 1 (популярное)">
-      <div class="flex flex-col gap-3 md:grid md:grid-cols-2 lg:grid-cols-3">
+      <div class="flex flex-col gap-4">
         <Card
             v-for="app in popularFiltered"
-            :key="app.id"
+            :key="app.app_id"
             :app="app"
-            @click="openApp(app.id)"
+            @click="openApp(app.app_id)"
         />
       </div>
     </SectionBlock>
 
-    <!-- Банки -->
     <SectionBlock title="Банки">
-      <div class="w-full bg-gray-200 rounded-xl h-48 md:h-64 flex items-center justify-center">
-        Банковская подборка
+      <div class="w-full h-40 bg-gray-200 rounded-xl flex items-center justify-center shadow-inner">
+        <span class="text-gray-600 font-medium">Банковская подборка</span>
       </div>
     </SectionBlock>
 
-    <!-- Выбор редакции -->
     <SectionBlock title="Выбор редакции">
-      <div class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
+      <div class="flex flex-col gap-4">
         <Card
             v-for="app in editorsChoice"
-            :key="app.id"
+            :key="app.app_id"
             :app="app"
-            size="small"
-            @click="openApp(app.id)"
+            @click="openApp(app.app_id)"
         />
       </div>
     </SectionBlock>
 
-    <!-- Недавно смотрели -->
     <SectionBlock title="Вы недавно смотрели">
-      <div class="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
+      <div class="flex flex-col gap-4">
         <Card
             v-for="app in recent"
-            :key="app.id"
+            :key="app.app_id"
             :app="app"
-            size="small"
-            @click="openApp(app.id)"
+            @click="openApp(app.app_id)"
         />
       </div>
     </SectionBlock>
@@ -58,21 +47,20 @@
   </div>
 </template>
 
-
 <script>
-import apps from "@/data/apps.json";
+import appData from "@/data/apps.json";
 import SearchBar from "@/components/UI/SearchBar.vue";
 import Banner from "@/components/UI/Banner.vue";
-import Card from "@/components/Card/Card.vue";
 import SectionBlock from "@/components/UI/SectionBlock.vue";
+import Card from "@/components/Card/Card.vue";
 
 export default {
-  components: { SearchBar, Banner, Card, SectionBlock },
+  components: { SearchBar, Banner, SectionBlock, Card },
 
   data() {
     return {
       query: "",
-      apps
+      apps: appData
     };
   },
 
@@ -80,16 +68,14 @@ export default {
     popularFiltered() {
       return this.apps
           .filter(a => a.popular)
-          .filter(a => a.title.toLowerCase().includes(this.query.toLowerCase()));
+          .filter(a => a.app_name.toLowerCase().includes(this.query.toLowerCase()));
     },
-
     editorsChoice() {
       return this.apps.filter(a => a.editorsChoice);
     },
-
     recent() {
       return this.apps.filter(a => a.recent);
-    }
+    },
   },
 
   methods: {
