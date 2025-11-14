@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"backend/internal/config"
+	"hih-yadebi-backend/internal/config"
 	_ "github.com/lib/pq"
 	"log"
 )

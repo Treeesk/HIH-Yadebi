@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
-	"backend/internal/models"
+	"hih-yadebi-backend/internal/models"
 	// "time"
 )
 
@@ -38,7 +38,7 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, name string) (*mode
 	`
 
 	row := r.DB.QueryRowContext(ctx, query, name)
-	err := row.Scan(&user.ID, &user.name, &user.Password, &user.Email)
+	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email)
 
 	if err == sql.ErrNoRows {
 		return nil, nil

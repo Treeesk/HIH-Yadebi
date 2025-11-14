@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
-	"ginserv/internal/models"
+	"hih-yadebi-backend/internal/models"
 )
 
 type CategoryRepository struct {
