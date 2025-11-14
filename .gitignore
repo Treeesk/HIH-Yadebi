@@ -6,6 +6,7 @@ dist/
 
 # Env
 .env
+backend/.env
 .env.*
 
 # IDE
