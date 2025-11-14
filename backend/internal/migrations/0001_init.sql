@@ -28,6 +28,7 @@ CREATE TABLE apps (
     downloads BIGINT DEFAULT 0,
     rating NUMERIC(3,2) DEFAULT 0,
     version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
+    apk TEXT,
     developer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL
 );

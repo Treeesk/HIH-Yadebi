@@ -31,8 +31,9 @@ type App struct {
 	SizeMB      float64 `json:"size_mb"`
 	AgeRating   string  `json:"age_rating"`
 	Downloads   int64   `json:"downloads"`
-	Rating      float64 `json:"rating"`
+	// Rating      float64 `json:"rating"`
 	Version     string  `json:"version"`
+	Apk         string  `json:"apk"`
 
 	DeveloperID int `json:"developer_id"`
 	CategoryID  int `json:"category_id"`
