@@ -11,11 +11,12 @@ import (
 )
 
 type StoreHandler struct {
-	AppRepo *database.AppRepository
+	AppRepo      *database.AppRepository
+	CategoryRepo *database.CategoryRepository
 }
 
-func NewStoreHandler(repo *database.AppRepository) *StoreHandler {
-	return &StoreHandler{AppRepo: repo}
+func NewStoreHandler(appRepo *database.AppRepository, categoryRepo *database.CategoryRepository) *StoreHandler {
+	return &StoreHandler{AppRepo: appRepo, CategoryRepo: categoryRepo}
 }
 
 func (h *StoreHandler) MainStorePage(c *gin.Context) {
@@ -31,7 +32,7 @@ func (h *StoreHandler) GetAppsByCategoryID(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	category_id_int, err := strconv.Atoi(category_id)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
@@ -39,8 +40,21 @@ func (h *StoreHandler) GetAppsByCategoryID(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
-	}i
+	}
+	if apps == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "category not found or there are no apps with this category"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"apps": apps})
 }
-func (h *StoreHandler) GetCategories(c *gin.Context) {
 
+func (h *StoreHandler) GetCategories(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	categories, err := h.CategoryRepo.GetAllCategories(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"categories": categories})
 }

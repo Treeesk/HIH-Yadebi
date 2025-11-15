@@ -32,6 +32,7 @@ func SetupRoutes(
 	r.GET("/getApp", appHandler.GetAppByID)
 	r.GET("/getAppReviews", appHandler.GetAppReviews)
 	r.POST("/addReview", appHandler.AddReview)
+	r.POST("/addApp", appHandler.AddApp)
 
 	// =============== PROFILE ===============
 
@@ -41,12 +42,13 @@ func SetupRoutes(
 func SetupRouter(
 	userRepo *database.UserRepository,
 	appRepo *database.AppRepository,
+	categoryRepo *database.CategoryRepository,
 ) *gin.Engine {
 
 	r := gin.Default()
 
 	authHandler := handlers.NewAuthHandler(userRepo)
-	storeHandler := handlers.NewStoreHandler(appRepo)
+	storeHandler := handlers.NewStoreHandler(appRepo, categoryRepo)
 	appHandler := handlers.NewAppHandler(appRepo)
 	profileHandler := handlers.NewProfileHandler(userRepo)
 

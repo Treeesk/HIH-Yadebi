@@ -19,7 +19,8 @@ func main() {
 
 	userRepo := database.NewUserRepository(db)
 	appRepo := database.NewAppRepository(db)
-	r := routes.SetupRouter(userRepo, appRepo)
+	categoryRepo := database.NewCategoryRepository(db)
+	r := routes.SetupRouter(userRepo, appRepo, categoryRepo)
 
 	log.Println("✅ Everything works!")
 	r.Run("0.0.0.0:8080")
