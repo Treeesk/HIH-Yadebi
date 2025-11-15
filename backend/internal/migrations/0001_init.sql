@@ -31,6 +31,7 @@ CREATE TABLE apps (
     link_apk TEXT,
     developer_id INTEGER NOT NULL REFERENCES developer(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()  -- дата и время добавления приложения
 );
 
 -- =========================

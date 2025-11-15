@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // ========================
 // USERS
 // ========================
@@ -35,6 +37,7 @@ type App struct {
 
 	DeveloperID int `json:"developer_id"`
 	CategoryID  int `json:"category_id"`
+	CreatedAt   time.Time `json:"created_at"` // дата и время добавления приложения
 }
 
 // ========================
