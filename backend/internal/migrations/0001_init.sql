@@ -29,9 +29,6 @@ CREATE TABLE apps (
     -- rating NUMERIC(3,2) DEFAULT 0,
     version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
     link_apk TEXT,
-    link_icon_small TEXT,       -- ссылка на маленькую иконку
-    link_icon_large TEXT,       -- ссылка на большую иконку
-    link_screenshots TEXT,      -- JSON-массив ссылок на скриншоты
     developer_id INTEGER NOT NULL REFERENCES developer(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()  -- дата и время добавления приложения
