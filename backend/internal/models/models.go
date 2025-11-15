@@ -5,21 +5,19 @@ import "time"
 // ===== USERS =====
 
 type User struct {
-	ID           int       `json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"-"` // не отдаём в JSON
-	CreatedAt    time.Time `json:"created_at"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	PasswordHash string `json:"password_hash"`
+	Email        string `json:"email"`
 }
 
 // ===== DEVELOPERS =====
 
 type Developer struct {
-	ID           int       `json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"-"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	PasswordHash string `json:"password_hash"`
+	Email        string `json:"email"`
 }
 
 // ===== CATEGORY =====

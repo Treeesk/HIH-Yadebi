@@ -51,7 +51,7 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	row := r.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&app.ID, &app.Title, &app.Description, &app.SizeMB,
-		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud,
+		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud, 
 		&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -94,66 +94,4 @@ func (r *AppRepository) GetAppByCategoryID(ctx context.Context, categoryID int) 
 	}
 
 	return apps, nil
-}
-func (r *AppRepository) GetPopularApps(limit int) ([]int, error) {
-
-	query := `
-        SELECT a.id
-        FROM apps a
-        LEFT JOIN reviews r ON a.id = r.app_id
-        GROUP BY a.id
-        ORDER BY 
-            COALESCE(AVG(r.score), 0) DESC,  -- 1. Средний рейтинг
-            a.downloads DESC,                -- 2. Загрузки
-            a.created_at DESC                -- 3. Новые
-        LIMIT $1;
-    `
-
-	rows, err := r.DB.Query(query, limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var top []int
-
-	for rows.Next() {
-		var top_el int
-		if scanErr := rows.Scan(&top_el); scanErr != nil {
-			return nil, scanErr
-		}
-		top = append(top, top_el)
-	}
-
-	return top, nil
-}
-func (r *AppRepository) GetNewApps(limit int) ([]int, error) {
-
-	query := `
-        SELECT a.id
-        FROM apps a
-        LEFT JOIN reviews r ON a.id = r.app_id
-        GROUP BY a.id
-        ORDER BY 
-            a.created_at DESC                -- 3. Новые
-        LIMIT $1;
-    `
-
-	rows, err := r.DB.Query(query, limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var top_date []int
-
-	for rows.Next() {
-		var top_date_el int
-		if scanErr := rows.Scan(&top_date_el); scanErr != nil {
-			return nil, scanErr
-		}
-		top_date = append(top_date, top_date_el)
-	}
-
-	return top_date, nil
 }
