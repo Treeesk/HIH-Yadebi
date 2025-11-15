@@ -12,6 +12,18 @@ export default {
 
 <style>
 html, body, #app {
-  background: white !important;
+  margin: 0;
+  padding: 0;
+
+  /* Включаем скролл НАВСЕГДА */
+  overflow-y: auto !important;
+
+  /* ДЕЛАЕМ ФОН БЕЛЫМ */
+  background: #ffffff !important;
+
+  /* Мобильная плавность */
+  -webkit-overflow-scrolling: touch;
+
+  height: 100%;
 }
 </style>

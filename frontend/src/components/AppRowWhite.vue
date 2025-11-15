@@ -1,36 +1,34 @@
 <template>
-  <div class="flex items-center justify-between py-3">
+  <div class="flex items-center py-3 w-full">
 
     <!-- LEFT -->
-    <div class="flex items-center gap-4">
-
-      <!-- ICON -->
+    <div class="flex items-center gap-3 flex-shrink">
       <img
           :src="iconUrl"
-          class="w-14 h-14 rounded-2xl object-cover shadow-sm"
+          class="w-10 h-10 rounded-2xl object-cover flex-shrink-0"
       />
-
-      <!-- TEXT -->
-      <div class="flex flex-col leading-tight">
-        <h3 class="text-lg font-semibold text-gray-900">
-          {{ app.app_name }}
-        </h3>
-
-        <!-- GENRE instead of stars -->
-        <p class="text-sm text-gray-600 mt-1">
-          {{ app.app_category }}
-        </p>
-      </div>
-
     </div>
 
-    <!-- DOWNLOAD BUTTON -->
-    <button
-        class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl shadow-sm
-             hover:bg-blue-700 active:scale-95 transition"
-    >
-      Скачать
-    </button>
+    <!-- MIDDLE -->
+    <div class="flex flex-col flex-grow px-2 overflow-hidden">
+      <h3 class="text-base font-semibold text-gray-900 truncate">
+        {{ app.app_name }}
+      </h3>
+
+      <p class="text-sm text-gray-500 truncate">
+        {{ app.app_category }}
+      </p>
+    </div>
+
+    <!-- RIGHT (BUTTON) -->
+    <div class="flex-shrink-0 pl-2">
+      <button
+          class="px-4 py-1.5 rounded-full bg-blue-500 text-white text-sm font-semibold
+               whitespace-nowrap hover:bg-blue-600 active:scale-95 transition"
+      >
+        Загрузить
+      </button>
+    </div>
 
   </div>
 </template>
@@ -41,7 +39,8 @@ export default {
 
   computed: {
     iconUrl() {
-      return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(this.app.app_name)}`
+      return this.app.icon_url ||
+          `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(this.app.app_name)}`
     }
   }
 }
