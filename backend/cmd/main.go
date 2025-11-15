@@ -16,13 +16,10 @@ func main() {
 	db := database.Connect(dbConfig)
 	database.ApplyMigrations(db, "internal/migrations")
 	defer db.Close()
-
+	reviewRepo := database.NewReviewRepository(db)
 	userRepo := database.NewUserRepository(db)
 	appRepo := database.NewAppRepository(db)
-	categoryRepo := database.NewCategoryRepository(db)
-	r := routes.SetupRouter(userRepo, appRepo, categoryRepo)
-
-
+	r := routes.SetupRouter(userRepo, appRepo, reviewRepo)
 
 	log.Println("✅ Everything works!")
 	r.Run("0.0.0.0:8080")
