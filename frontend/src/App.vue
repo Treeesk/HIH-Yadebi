@@ -1,73 +1,55 @@
 <template>
-  <div id="app">
-    <transition name="calm" mode="out-in">
-      <router-view />
-    </transition>
-  </div>
+  <router-view />
 </template>
 
 <style>
-/* ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ УДАЛЕНИЯ ОТСТУПОВ */
-html, body {
+/* ПОЛНЫЙ ФИКС ДЛЯ ВСЕГО ЭКРАНА */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* УБИРАЕМ СКРОЛЛБАРЫ НАВСЕГДА */
+html {
+  overflow: hidden !important; /* Убираем скролл у html */
+  width: 100% !important;
+  height: 100% !important;
+  background: #f9fafb !important;
+}
+
+body {
   margin: 0 !important;
   padding: 0 !important;
-  width: 100% !important;
-  overflow-x: hidden !important;
-  background: white !important;
+  width: 100vw !important; /* 100% ширины viewport */
+  height: 100vh !important; /* 100% высоты viewport */
+  overflow: auto !important; /* Разрешаем скролл только у body */
+  background: #f9fafb !important;
+
+  /* Убираем скроллбары */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE 10+ */
+}
+
+body::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge */
 }
 
 #app {
   margin: 0 !important;
   padding: 0 !important;
-  width: 100% !important;
-  min-height: 100vh;
+  width: 100vw !important;
+  min-height: 100vh !important;
+  background: #f9fafb !important;
 }
 
-/* Для мобильных - УБИРАЕМ ВСЕ ОТСТУПЫ */
+/* Для мобильных */
 @media (max-width: 767px) {
   body {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    width: 100% !important;
+    height: 100% !important;
   }
-
-  .container,
-  [class*="container"] {
-    max-width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin: 0 !important;
-  }
-}
-
-/* =========================================================
-   CALM TRANSITION — мягкая, премиальная, без резких эффектов
-   ========================================================= */
-
-/* ВХОД/ВЫХОД — плавность */
-.calm-enter-active,
-.calm-leave-active {
-  transition: opacity 0.30s ease, transform 0.30s ease;
-}
-
-/* ВХОД — очень лёгкое смещение */
-.calm-enter-from {
-  opacity: 0;
-  transform: translateY(6px);
-}
-
-.calm-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ВЫХОД — лёгкое плавное исчезновение */
-.calm-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.calm-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
 }
 </style>
