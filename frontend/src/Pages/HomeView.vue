@@ -1,15 +1,5 @@
 <template>
   <div class="w-full min-h-screen bg-white px-4 pt-4 pb-24 overflow-x-hidden">
-
-    <div class="bg-gray-100 w-full rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
-      <span class="text-gray-500">🔍</span>
-      <input v-model="query"
-             type="text"
-             placeholder="Поиск приложений"
-             class="flex-1 bg-transparent outline-none" />
-      <span>👤</span>
-    </div>
-
     <Banner class="mt-6" text="MAX — приложение дня" />
 
     <div v-for="cat in filteredCategories" :key="cat.category_name" class="mt-10">

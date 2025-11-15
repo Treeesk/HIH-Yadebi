@@ -1,13 +1,15 @@
 <template>
   <div class="search-layout min-h-screen bg-gray-50">
-    <!-- Хедер с поиском -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div class="w-full px-4 py-3">
-        <div class="flex items-center gap-3">
-          <!-- Кнопка назад -->
+        <div class="flex items-center gap-3 transition-all duration-200">
+
+          <!-- BACK BUTTON -->
           <button
               @click="goBack"
-              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:bg-gray-200"
+              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors"
               aria-label="Назад"
           >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,22 +17,22 @@
             </svg>
           </button>
 
-          <!-- Поле поиска -->
+          <!-- SEARCH FIELD -->
           <div class="flex-1 relative">
             <input
                 ref="searchInput"
                 v-model="searchQuery"
-                @keyup.enter="performSearch"
+                @input="onTyping"
                 type="text"
                 placeholder="Поиск приложений..."
-                class="w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors outline-none text-gray-800 placeholder-gray-500"
+                class="search-input w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 outline-none text-gray-800 placeholder-gray-500 transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:bg-white"
             >
 
-            <!-- Кнопка очистки -->
+            <!-- CLEAR BUTTON -->
             <button
                 v-if="searchQuery"
                 @click="clearSearch"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -38,43 +40,33 @@
             </button>
           </div>
 
-          <!-- Иконка пользователя -->
-          <button
-              @click="goToProfile"
-              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:bg-gray-200"
-              aria-label="Профиль"
-          >
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-          </button>
         </div>
       </div>
     </header>
 
-    <!-- Основной контент -->
+    <!-- CONTENT -->
     <main class="w-full h-[calc(100vh-80px)] overflow-y-auto">
-      <div :class="isMobile ? 'w-full' : 'container mx-auto px-4'">
+      <div :class="isMobile ? 'w-full px-4' : 'container mx-auto px-4'">
         <slot
             :search-query="searchQuery"
             :is-loading="isLoading"
             :categories="categories"
             :search-results="searchResults"
-            :perform-search="performSearch"
-            :clear-search="clearSearch"
             :is-mobile="isMobile"
-        ></slot>
+        />
       </div>
     </main>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SearchLayout',
+  name: "SearchLayout",
+
   data() {
     return {
-      searchQuery: '',
+      searchQuery: "",
       isLoading: false,
       categories: [
         { category_id: 1, category_title: "Шутеры" },
@@ -100,114 +92,80 @@ export default {
       ],
       searchResults: [],
       isMobile: false
-    }
+    };
   },
-  mounted() {
-    // Определяем тип устройства
-    this.isMobile = this.checkIsMobile()
 
-    // Фокус на поле ввода на мобильных устройствах
-    if (this.isMobile && this.$refs.searchInput) {
-      setTimeout(() => {
-        this.$refs.searchInput.focus()
-        setTimeout(() => {
-          this.$refs.searchInput.focus()
-        }, 100)
-      }, 300)
-    }
+  mounted() {
+    this.isMobile = this.checkMobile();
+
+    // стабилизированный автофокус
+    setTimeout(() => {
+      this.$refs.searchInput?.focus();
+    }, 120);
   },
+
   methods: {
-    checkIsMobile() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-          window.innerWidth < 768
+    checkMobile() {
+      return window.innerWidth < 768 || /iPhone|Android/i.test(navigator.userAgent);
     },
 
     goBack() {
-      this.$router.push('/')
+      this.$router.push("/");
     },
 
-    goToProfile() {
-      alert('Переход в профиль пользователя')
+    onTyping() {
+      this.isLoading = true;
+
+      clearTimeout(this._debounce);
+      this._debounce = setTimeout(() => {
+        this.performSearch();
+      }, 250);
     },
 
     performSearch() {
       if (!this.searchQuery.trim()) {
-        this.clearSearch()
-        return
+        this.clearSearch();
+        return;
       }
 
-      this.isLoading = true
+      this.isLoading = true;
 
       setTimeout(() => {
         this.searchResults = [
-          { app_id: 1, title: `${this.searchQuery} Game`, developer: "Game Studio", category: "Игры" },
-          { app_id: 2, title: `${this.searchQuery} App`, developer: "App Corp", category: "Утилиты" },
-          { app_id: 3, title: `${this.searchQuery} Tool`, developer: "Tool Inc", category: "Инструменты" },
-          { app_id: 4, title: `${this.searchQuery} Messenger`, developer: "Message Corp", category: "Мессенджеры" },
-          { app_id: 5, title: `${this.searchQuery} Bank`, developer: "Bank Inc", category: "Банки" },
-          { app_id: 6, title: `${this.searchQuery} Music`, developer: "Music Corp", category: "Музыка" }
-        ]
-        this.isLoading = false
+          { app_id: 1, title: `${this.searchQuery} Game`, developer: "Game Studio" },
+          { app_id: 2, title: `${this.searchQuery} App`, developer: "App Corp" },
+          { app_id: 3, title: `${this.searchQuery} Tool`, developer: "Tools Inc" }
+        ];
 
-        this.$emit('search-completed', {
-          query: this.searchQuery,
-          results: this.searchResults
-        })
-      }, 500)
+        this.isLoading = false;
+      }, 200);
     },
 
     clearSearch() {
-      this.searchQuery = ''
-      this.searchResults = []
-      this.$emit('search-cleared')
+      this.searchQuery = "";
+      this.searchResults = [];
+      this.$emit("search-cleared");
+      setTimeout(() => this.$refs.searchInput?.focus(), 50);
     }
-  },
-  watch: {
-    searchQuery(newQuery) {
-      if (!newQuery.trim()) {
-        this.clearSearch()
-      }
-    }
-  },
-  emits: ['search-completed', 'search-cleared']
-}
+  }
+};
 </script>
 
 <style scoped>
-.search-layout {
-  min-height: 100vh;
-}
-
-/* Убираем ВСЕ отступы на мобильных */
+/* УБИРАЕМ ОТСТУПЫ НА МОБИЛКАХ */
 @media (max-width: 767px) {
-  .search-layout {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
+  .search-layout,
   main {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
 
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar {
-  width: 4px;
+/* Мягкая анимация поля */
+.search-input {
+  transition: all 0.2s ease;
 }
-
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 2px;
-}
-
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.search-input:focus {
+  transform: scale(1.01);
 }
 </style>
