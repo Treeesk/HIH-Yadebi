@@ -3,29 +3,23 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 	"hih-yadebi-backend/internal/config"
 	"log"
 )
 
-func Connect(cfg *config.ConfigDB) (*sql.DB, error) {
-	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName,
-	)
-
-	db, err := sql.Open("postgres", dsn)
+func Connect(cfg *config.ConfigDB) *sql.DB {
+	psqlInfo := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		return nil, fmt.Errorf("postgresql open error: %w", err)
+		log.Fatalf("postregsql connection error: %v", err)
 	}
-
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("postgresql ping error: %w", err)
+	// defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("postgresql ping error: %v", err)
 	}
-
-	// параметры пула соединений
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(5)
-
-	log.Println("postgresql successfully connected")
-	return db, nil
+	log.Println("postgresql succesfully connected")
+	return db
 }
