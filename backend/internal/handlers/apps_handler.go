@@ -17,7 +17,6 @@ func NewAppsHandler(repo *database.AppsRepository) *AppsHandler {
 func (h *AppsHandler) GetPopular(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, _ := strconv.Atoi(limitStr)
-
 	ids, err := h.Repo.GetPopularApps(limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
@@ -25,4 +24,15 @@ func (h *AppsHandler) GetPopular(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"ids": ids})
+}
+func (h *AppsHandler) GetNewApp(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "10")
+	limit, _ := strconv.Atoi(limitStr)
+	top_date, err := h.Repo.GetNewApps(limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"top_date": top_date})
 }
