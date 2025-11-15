@@ -5,19 +5,21 @@ import "time"
 // ===== USERS =====
 
 type User struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	ID           int       `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"` // не отдаём в JSON
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 // ===== DEVELOPERS =====
 
 type Developer struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	ID           int       `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 // ===== CATEGORY =====
@@ -30,14 +32,15 @@ type Category struct {
 // ===== APPS =====
 
 type App struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	SizeMB      float64   `json:"size_mb"`
-	AgeRating   string    `json:"age_rating"`
-	Downloads   int64     `json:"downloads"`
+	ID          int     `json:"id"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	SizeMB      float64 `json:"size_mb"`
+	AgeRating   string  `json:"age_rating"`
+	Downloads   int64   `json:"downloads"`
+	// Rating      float64   `json:"rating"`
 	Version     string    `json:"version"`
-	LinkApp     string    `json:"link_cloud"`
+	LinkCloud   string    `json:"link_cloud"`
 	DeveloperID int       `json:"developer_id"`
 	CategoryID  int       `json:"category_id"`
 	CreatedAt   time.Time `json:"created_at"`

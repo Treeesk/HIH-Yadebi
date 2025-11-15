@@ -1,40 +1,31 @@
 package main
 
 import (
-	"log"
-
-	"github.com/gin-gonic/gin"
-
 	"hih-yadebi-backend/internal/config"
 	"hih-yadebi-backend/internal/database"
 	"hih-yadebi-backend/internal/handlers"
+
+	// "hih-yadebi-backend/internal/handlers"
+	"hih-yadebi-backend/internal/routes"
+	"log"
 )
 
 func main() {
-	log.Println("Starting server...")
+	log.Println("Testing config and database...")
 
-	// 1. Загружаем конфиг
+	// Просто загружаем конфиг и подключаемся к БД
 	dbConfig := config.LoadDB()
-
-	// 2. Подключаемся к базе
 	db := database.Connect(dbConfig)
+	database.ApplyMigrations(db, "internal/migrations")
 	defer db.Close()
 
-	// 3. Инициализируем репозиторий
-	appsRepo := database.NewAppRepository(db)
-
-	// 4. Инициализируем хендлер
-	appsHandler := handlers.NewAppsHandler(appsRepo)
-
-	// 5. Gin router
-	r := gin.Default()
-
-	// 6. Маршрут для проверки apps_handler
-
+	userRepo := database.NewUserRepository(db)
+	appRepo := database.NewAppRepository(db)
+	appsHandler := handlers.NewAppsHandler(appRepo)
+	r := routes.SetupRouter(userRepo, appRepo)
 	r.GET("/apps/new", appsHandler.GetNewApp) // получить новые
 	r.POST("/apps", appsHandler.Create)       // создать приложение
 
-	r.Run(":8080")
-
-	// 7. Запускаем сервер
+	log.Println("✅ Everything works!")
+	r.Run("0.0.0.0:8080")
 }
