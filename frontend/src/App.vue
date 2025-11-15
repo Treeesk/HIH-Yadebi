@@ -3,53 +3,66 @@
 </template>
 
 <style>
-/* ПОЛНЫЙ ФИКС ДЛЯ ВСЕГО ЭКРАНА */
+/* Сбрасываем всё, что может ломать layout */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* УБИРАЕМ СКРОЛЛБАРЫ НАВСЕГДА */
+/* Корневой html — фиксируем горизонтальный скролл */
 html {
-  overflow: hidden !important; /* Убираем скролл у html */
   width: 100% !important;
   height: 100% !important;
+  overflow-x: hidden !important;  /* <-- главное */
+  overflow-y: auto !important;
   background: #f9fafb !important;
 }
 
+/* Body — только вертикальный скролл, никакого 100vw */
 body {
   margin: 0 !important;
   padding: 0 !important;
-  width: 100vw !important; /* 100% ширины viewport */
-  height: 100vh !important; /* 100% высоты viewport */
-  overflow: auto !important; /* Разрешаем скролл только у body */
+
+  width: 100% !important;      /* без 100vw */
+  max-width: 100% !important;  /* запрещаем переполнение */
+
+  height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
   background: #f9fafb !important;
 
-  /* Убираем скроллбары */
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE 10+ */
+  /* скрываем скроллбар */
+  scrollbar-width: none !important;      /* Firefox */
+  -ms-overflow-style: none !important;   /* IE/Edge */
 }
 
 body::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Edge */
+  display: none !important; /* Chrome/Safari/Opera */
 }
 
+/* #app — тоже ТОЛЬКО % */
 #app {
   margin: 0 !important;
   padding: 0 !important;
-  width: 100vw !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
   min-height: 100vh !important;
+  overflow-x: hidden !important;
+
   background: #f9fafb !important;
 }
 
-/* Для мобильных */
+/* Мобильная адаптация */
 @media (max-width: 767px) {
   body {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
     width: 100% !important;
     height: 100% !important;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 </style>
