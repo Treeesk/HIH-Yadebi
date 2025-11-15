@@ -51,7 +51,7 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	row := r.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&app.ID, &app.Title, &app.Description, &app.SizeMB,
-		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud, 
+		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud,
 		&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -93,5 +93,63 @@ func (r *AppRepository) GetAppByCategoryID(ctx context.Context, categoryID int) 
 		return nil, nil
 	}
 
+	return apps, nil
+}
+
+func (r *AppRepository) GetMostPopularApps(ctx context.Context, limit int) ([]*models.App, error) {
+	apps := make([]*models.App, 0)
+	query := `SELECT a.id
+        FROM apps a
+        LEFT JOIN reviews r ON a.id = r.app_id
+        GROUP BY a.id
+        ORDER BY 
+            COALESCE(AVG(r.score), 0) DESC,  -- 1. Средний рейтинг
+            a.downloads DESC,                -- 2. Загрузки
+            a.created_at DESC                -- 3. Новые
+        LIMIT $1;`
+	rows, err := r.DB.Query(query, limit)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var app_id int
+		if err := rows.Scan(&app_id); err != nil {
+			return nil, err
+		}
+		app, _ := r.GetAppByID(context.Background(), app_id)
+		apps = append(apps, app)
+	}
+	return apps, nil
+}
+
+func (r *AppRepository) GetMostNewApps(ctx context.Context, limit int) ([]*models.App, error) {
+	apps := make([]*models.App, 0)
+	query := `
+        SELECT a.id
+        FROM apps a
+        LEFT JOIN reviews r ON a.id = r.app_id
+        GROUP BY a.id
+        ORDER BY 
+            a.created_at DESC                -- 3. Новые
+        LIMIT $1;
+    `
+	rows, err := r.DB.Query(query, limit)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var app_id int
+		err := rows.Scan(&app_id)
+		if err != nil {
+			return nil, err
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		app, err := r.GetAppByID(ctx, app_id)
+		if err != nil {
+			return nil, err
+		}
+		apps = append(apps, app)
+	}
 	return apps, nil
 }
