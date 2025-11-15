@@ -29,15 +29,15 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) erro
 	).Scan(&user.ID)
 }
 
-func (r *UserRepository) GetUserByLogin(ctx context.Context, name string) (*models.User, error) {
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	user := &models.User{}
 
 	query := `
 		SELECT id, name, password_hash, email
-		FROM users WHERE name = $1
+		FROM users WHERE email = $1
 	`
 
-	row := r.DB.QueryRowContext(ctx, query, name)
+	row := r.DB.QueryRowContext(ctx, query, email)
 	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email)
 
 	if err == sql.ErrNoRows {
@@ -46,3 +46,16 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, name string) (*mode
 	return user, err
 }
 
+func (r *UserRepository) GetUserById(ctx context.Context, id int) (*models.User, error) {
+	user := &models.User{}
+
+	query := ""
+
+	row := r.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return user, err
+}
