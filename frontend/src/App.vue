@@ -1,12 +1,12 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
 }
 </script>
 
@@ -15,15 +15,17 @@ html, body, #app {
   margin: 0;
   padding: 0;
 
-  /* Включаем скролл НАВСЕГДА */
+  /* Разрешаем скролл везде */
   overflow-y: auto !important;
 
-  /* ДЕЛАЕМ ФОН БЕЛЫМ */
+  /* Белый фон — безопасно */
   background: #ffffff !important;
 
-  /* Мобильная плавность */
+  /* Плавная мобильная прокрутка */
   -webkit-overflow-scrolling: touch;
 
-  height: 100%;
+  /* ❗ Главное исправление — УБРАТЬ высоту 100% */
+  height: auto !important;
+  min-height: 100%;
 }
 </style>
