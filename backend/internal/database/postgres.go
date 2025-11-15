@@ -1,9 +1,9 @@
 package database
 
 import (
-	"backend/internal/config"
 	"database/sql"
 	"fmt"
+	"hih-yadebi-backend/internal/config"
 	"log"
 )
 
