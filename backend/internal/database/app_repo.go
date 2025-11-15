@@ -51,7 +51,7 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	row := r.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&app.ID, &app.Title, &app.Description, &app.SizeMB,
-		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud, 
+		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud,
 		&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -61,18 +61,18 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	return app, err
 }
 
-func (r *AppRepository) GetAppByCategoryID(ctx context.Context, category_id int) ([]*models.App, error) {
-	apps := make([]*models.App, 0)
-	query := ""
-	rows, err := r.DB.QueryContext(ctx, query, category_id)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-	for row.Next() {
-		var app models.App
-		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID) // хюйня с маленькой иконкой была
-	}
-}
+// func (r *AppRepository) GetAppByCategoryID(ctx context.Context, category_id int) ([]*models.App, error) {
+// 	apps := make([]*models.App, 0)
+// 	query := ""
+// 	rows, err := r.DB.QueryContext(ctx, query, category_id)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			return nil, nil
+// 		}
+// 		return nil, err
+// 	}
+// 	for row.Next() {
+// 		var app models.App
+// 		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID) // хюйня с маленькой иконкой была
+// 	}
+// }

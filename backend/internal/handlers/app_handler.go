@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"hih-yadebi-backend/internal/database"
-	"time"
+	// "time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,11 +16,11 @@ func NewAppHandler(repo *database.AppRepository) *AppHandler {
 }
 
 type ReviewRequest struct {
-	AppID     int
-	UserID    int
-	Score     int
-	Comment   string
-	CreatedAt time.Time
+	AppID   int    `json:"app_id" binding:"required"`
+	UserID  int    `json:"user_id" binding:"required"`
+	Score   int    `json:"score" binding:"required"`
+	Comment string `json:"comment" binding:"required"`
+	// CreatedAt time.Time `json:"" binding:"required"`
 }
 
 func (h *AppHandler) GetAppByID(c *gin.Context) {

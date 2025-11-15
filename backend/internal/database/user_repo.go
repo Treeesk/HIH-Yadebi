@@ -24,7 +24,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) erro
 
 	return r.DB.QueryRowContext(ctx, query,
 		user.Name,
-		user.Password,
+		user.PasswordHash,
 		user.Email,
 	).Scan(&user.ID)
 }
@@ -38,7 +38,7 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	`
 
 	row := r.DB.QueryRowContext(ctx, query, email)
-	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email)
+	err := row.Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Email)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -52,7 +52,7 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id int) (*models.User,
 	query := ""
 
 	row := r.DB.QueryRowContext(ctx, query, id)
-	err := row.Scan(&user.ID, &user.Name, &user.Password, &user.Email)
+	err := row.Scan(&user.ID, &user.Name, &user.PasswordHash, &user.Email)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
