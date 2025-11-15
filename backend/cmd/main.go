@@ -21,6 +21,8 @@ func main() {
 	appRepo := database.NewAppRepository(db)
 	r := routes.SetupRouter(userRepo, appRepo)
 
+
+
 	log.Println("✅ Everything works!")
 	r.Run("0.0.0.0:8080")
 }
