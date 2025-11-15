@@ -1,13 +1,9 @@
 <template>
-  <div
-      class="flex items-center py-3 w-full active:opacity-70"
-      @click="openApp"
-  >
+  <div class="flex items-center py-3 w-full active:opacity-70" @click="openApp">
+
     <!-- ICON -->
-    <div
-        class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0"
-    >
-      <span class="text-3xl">{{ emoji }}</span>
+    <div class="w-14 h-14 overflow-hidden rounded-2xl bg-gray-200 flex-shrink-0">
+      <img :src="iconUrl" class="w-full h-full object-cover" />
     </div>
 
     <!-- TEXT -->
@@ -20,10 +16,10 @@
       </p>
     </div>
 
-    <!-- DOWNLOAD BUTTON — НЕ ДОЛЖНА ОТКРЫВАТЬ СТРАНИЦУ -->
+    <!-- BUTTON -->
     <button
-        class="px-4 py-1.5 rounded-full bg-blue-500 text-white text-sm font-semibold whitespace-nowrap"
         @click.stop="download"
+        class="px-4 py-1.5 rounded-full bg-blue-500 text-white text-sm font-semibold whitespace-nowrap hover:bg-blue-600 active:scale-95 transition"
     >
       Загрузить
     </button>
@@ -35,8 +31,8 @@ export default {
   props: { app: Object },
 
   computed: {
-    emoji() {
-      return this.app.emoji || "🤖";
+    iconUrl() {
+      return `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(this.app.app_name)}&scale=90&size=200&radius=20&backgroundColor=b6e3f4,ffdfbf,c0aede,d1d4f9`;
     }
   },
 
@@ -47,11 +43,9 @@ export default {
         params: { id: this.app.app_id }
       });
     },
-
     download() {
-      console.log("download →", this.app.app_name);
-      // здесь потом вставим реальное скачивание
+      console.log("Download:", this.app.app_name);
     }
   }
-};
+}
 </script>
