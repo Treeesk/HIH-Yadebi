@@ -1,69 +1,57 @@
 package config
 
 import (
-	"bufio"
+	// "fmt"
 	"log"
 	"os"
 	"strconv"
-	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type ConfigDB struct {
 	DBHost     string
-	DBPort     int
+	DBPort     string
 	DBUser     string
 	DBPassword string
 	DBName     string
-	DBSSLMode  string
+	// JWTSecret  string
+	// JWTTimeout int
 }
 
-func LoadEnvFile(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Printf(".env not found: %v", err)
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		if len(line) == 0 || strings.HasPrefix(line, "#") {
-			continue
-		}
-
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		os.Setenv(key, value)
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatalf("error reading .env: %v", err)
-	}
+type ConfigJWT struct {
+	JWTSecret  string
+	JWTTimeout int
 }
 
-func LoadConfig() *ConfigDB {
-	LoadEnvFile(".env")
-
-	port, err := strconv.Atoi(os.Getenv("DB_PORT"))
+func LoadDB() *ConfigDB {
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("invalid DB_PORT: %v", err)
+		log.Fatalf(".env file load error: %v", err)
 	}
-
 	return &ConfigDB{
 		DBHost:     os.Getenv("DB_HOST"),
-		DBPort:     port,
+		DBPort:     os.Getenv("DB_PORT"),
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
-		DBSSLMode:  os.Getenv("DB_SSLMODE"),
+		// JWTSecret:  os.Getenv("JWT_SECRET"),
+		// JWTTimeout: jwtTimeout,
+	}
+}
+
+func LoadJWT() *ConfigJWT {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf(".env file load error: %v", err)
+	}
+	jwtTimeout, err := strconv.Atoi(os.Getenv("JWT_TIMEOUT"))
+	if err != nil || jwtTimeout <= 0 {
+		log.Println("something wrong with JWTTimeout")
+		jwtTimeout = 60
+	}
+	return &ConfigJWT{
+		JWTSecret:  os.Getenv("JWT_SECRET"),
+		JWTTimeout: jwtTimeout,
 	}
 }
