@@ -14,13 +14,15 @@
       <h2 class="text-lg font-semibold text-gray-800 mb-4">
         Результаты поиска: "{{ slotProps.searchQuery }}"
       </h2>
-      <div class="grid grid-cols-2 gap-4">
+
+      <!-- Адаптивная сетка для результатов -->
+      <div :class="slotProps.isMobile ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'">
         <div
             v-for="app in slotProps.searchResults"
             :key="app.app_id"
-            class="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer border border-gray-100"
+            class="bg-white rounded-xl shadow-sm p-3 hover:shadow-md transition-shadow cursor-pointer border border-gray-100"
         >
-          <div class="aspect-[4/3] bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg mb-3 flex items-center justify-center">
+          <div class="aspect-square bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg mb-2 flex items-center justify-center">
             <span class="text-blue-600 text-sm font-medium">APP</span>
           </div>
           <h3 class="font-semibold text-gray-800 text-sm truncate">{{ app.title }}</h3>
@@ -31,20 +33,42 @@
 
     <!-- Категории (когда нет поиска) -->
     <div v-else class="pt-4 pb-8">
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Desktop версия - много колонок -->
+      <div v-if="!slotProps.isMobile" class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         <div
             v-for="category in slotProps.categories"
             :key="category.category_id"
             class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all cursor-pointer border border-blue-100"
             @click="selectCategory(category)"
         >
-          <!-- Высокий прямоугольник с эмодзи -->
-          <div class="aspect-[3/4] bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-            <span class="text-white text-3xl">{{ getCategoryEmoji(category.category_title) }}</span>
+          <!-- Квадратный прямоугольник для десктопа -->
+          <div class="aspect-square bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <span class="text-white text-2xl">{{ getCategoryEmoji(category.category_title) }}</span>
           </div>
           <!-- Подпись категории -->
           <div class="p-3">
-            <h3 class="font-semibold text-gray-800 text-center text-sm">
+            <h3 class="font-semibold text-gray-800 text-center text-sm truncate">
+              {{ category.category_title }}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile версия - 2 колонки -->
+      <div v-else class="grid grid-cols-2 gap-3">
+        <div
+            v-for="category in slotProps.categories"
+            :key="category.category_id"
+            class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all cursor-pointer border border-blue-100"
+            @click="selectCategory(category)"
+        >
+          <!-- Высокий прямоугольник для мобильных -->
+          <div class="aspect-[3/4] bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <span class="text-white text-2xl">{{ getCategoryEmoji(category.category_title) }}</span>
+          </div>
+          <!-- Подпись категории -->
+          <div class="p-2">
+            <h3 class="font-semibold text-gray-800 text-center text-xs truncate">
               {{ category.category_title }}
             </h3>
           </div>
@@ -115,5 +139,11 @@ export default {
 </script>
 
 <style scoped>
-/* Дополнительные стили не требуются */
+/* Убираем горизонтальные отступы на мобильных */
+@media (max-width: 767px) {
+  :deep(.container) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 </style>
