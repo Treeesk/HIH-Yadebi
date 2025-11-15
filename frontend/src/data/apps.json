@@ -1,32 +1,225 @@
-[
-  {
-    "app_id": 1,
-    "app_name": "ВКонтакте",
-    "app_categorie": "Соцсети",
-    "popular": true,
-    "editorsChoice": false,
-    "recent": false,
-    "rating": 4.3,
-    "badge": "ТОП"
-  },
-  {
-    "app_id": 2,
-    "app_name": "MAX",
-    "app_categorie": "Общение",
-    "popular": true,
-    "editorsChoice": true,
-    "recent": false,
-    "rating": 4.5,
-    "badge": "ХИТ"
-  },
-  {
-    "app_id": 3,
-    "app_name": "Telegram",
-    "app_categorie": "Мессенджеры",
-    "popular": false,
-    "editorsChoice": true,
-    "recent": true,
-    "rating": 4.1,
-    "badge": "ТОП"
-  }
-]
+{
+  "categories": [
+    {
+      "category_name": "Популярное",
+      "apps": [
+        {
+          "app_id": 101,
+          "app_name": "Clash Royale",
+          "app_category": "Шутер"
+        },
+        {
+          "app_id": 102,
+          "app_name": "Clash of Clans",
+          "app_category": "Стратегия"
+        },
+        {
+          "app_id": 103,
+          "app_name": "Brawl Stars",
+          "app_category": "Экшен"
+        },
+        {
+          "app_id": 104,
+          "app_name": "Standoff 2",
+          "app_category": "Шутер"
+        },
+        {
+          "app_id": 105,
+          "app_name": "Among Us",
+          "app_category": "Социальная"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Выбор редакции",
+      "apps": [
+        {
+          "app_id": 201,
+          "app_name": "Minecraft",
+          "app_category": "Песочница"
+        },
+        {
+          "app_id": 202,
+          "app_name": "Monument Valley",
+          "app_category": "Головоломка"
+        },
+        {
+          "app_id": 203,
+          "app_name": "GRIS",
+          "app_category": "Арт-приключения"
+        },
+        {
+          "app_id": 204,
+          "app_name": "Inside",
+          "app_category": "Инди"
+        },
+        {
+          "app_id": 205,
+          "app_name": "Tetris",
+          "app_category": "Ретро"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Игры",
+      "apps": [
+        {
+          "app_id": 301,
+          "app_name": "Roblox",
+          "app_category": "Песочница"
+        },
+        {
+          "app_id": 302,
+          "app_name": "PUBG Mobile",
+          "app_category": "Шутер"
+        },
+        {
+          "app_id": 303,
+          "app_name": "Call of Duty Mobile",
+          "app_category": "Шутер"
+        },
+        {
+          "app_id": 304,
+          "app_name": "Genshin Impact",
+          "app_category": "RPG"
+        },
+        {
+          "app_id": 305,
+          "app_name": "Honkai Star Rail",
+          "app_category": "RPG"
+        },
+        {
+          "app_id": 306,
+          "app_name": "Bendy and the Ink Machine",
+          "app_category": "Хоррор"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Соцсети",
+      "apps": [
+        {
+          "app_id": 401,
+          "app_name": "VK",
+          "app_category": "Социальная сеть"
+        },
+        {
+          "app_id": 402,
+          "app_name": "Telegram",
+          "app_category": "Мессенджер"
+        },
+        {
+          "app_id": 403,
+          "app_name": "WhatsApp",
+          "app_category": "Мессенджер"
+        },
+        {
+          "app_id": 404,
+          "app_name": "Discord",
+          "app_category": "Сообщество"
+        },
+        {
+          "app_id": 405,
+          "app_name": "Reddit",
+          "app_category": "Сообщество"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Финансы",
+      "apps": [
+        {
+          "app_id": 501,
+          "app_name": "СберБанк Онлайн",
+          "app_category": "Финансы"
+        },
+        {
+          "app_id": 502,
+          "app_name": "Тинькофф",
+          "app_category": "Финансы"
+        },
+        {
+          "app_id": 503,
+          "app_name": "VTB Онлайн",
+          "app_category": "Финансы"
+        },
+        {
+          "app_id": 504,
+          "app_name": "ЮMoney",
+          "app_category": "Платежи"
+        },
+        {
+          "app_id": 505,
+          "app_name": "Райффайзен Банк",
+          "app_category": "Финансы"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Музыка и аудио",
+      "apps": [
+        {
+          "app_id": 601,
+          "app_name": "Spotify",
+          "app_category": "Музыка"
+        },
+        {
+          "app_id": 602,
+          "app_name": "Yandex Музыка",
+          "app_category": "Музыка"
+        },
+        {
+          "app_id": 603,
+          "app_name": "VK Музыка",
+          "app_category": "Музыка"
+        },
+        {
+          "app_id": 604,
+          "app_name": "Deezer",
+          "app_category": "Музыка"
+        },
+        {
+          "app_id": 605,
+          "app_name": "Shazam",
+          "app_category": "Инструменты"
+        }
+      ]
+    },
+
+    {
+      "category_name": "Видео и развлечения",
+      "apps": [
+        {
+          "app_id": 701,
+          "app_name": "YouTube",
+          "app_category": "Видео"
+        },
+        {
+          "app_id": 702,
+          "app_name": "Netflix",
+          "app_category": "Видео"
+        },
+        {
+          "app_id": 703,
+          "app_name": "ivi",
+          "app_category": "Видео"
+        },
+        {
+          "app_id": 704,
+          "app_name": "Kinopoisk",
+          "app_category": "Фильмы"
+        },
+        {
+          "app_id": 705,
+          "app_name": "Twitch",
+          "app_category": "Стримы"
+        }
+      ]
+    }
+  ]
+}

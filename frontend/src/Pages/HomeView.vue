@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto px-4 py-4 w-full max-w-[480px] bg-white">
 
-    <!-- SEARCH BAR -->
+    <!-- SEARCH -->
     <div class="bg-gray-100 w-full rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
       <input
           type="text"
@@ -12,79 +12,75 @@
       <span class="text-gray-500 text-xl">🔍</span>
     </div>
 
-    <!-- BIG PROMO BANNER -->
-    <div class="w-full h-40 mt-6 rounded-3xl bg-gradient-to-r from-indigo-500 to-blue-500 flex items-center justify-center shadow-md">
-      <p class="text-white text-lg font-semibold">Игра которую мы предлагаем</p>
+    <!-- БАННЕР: фиксированно показываем MAX -->
+    <Banner text="MAX — приложение дня" />
+
+    <!-- ВСЕ КАТЕГОРИИ ИЗ JSON -->
+    <div
+        v-for="cat in filteredCategories"
+        :key="cat.category_name"
+    >
+      <SectionBlock :title="cat.category_name">
+
+        <!-- ЕСЛИ ЭТО КАТЕГОРИЯ 'Банки' — ПОКАЗЫВАЕМ ПО ОДНОМУ -->
+        <div v-if="cat.category_name === 'Банки'">
+          <div class="flex flex-col divide-y divide-gray-200">
+            <AppRowWhite
+                v-for="app in cat.apps"
+                :key="app.app_id"
+                :app="app"
+            />
+          </div>
+        </div>
+
+        <!-- ДЛЯ ВСЕХ ОСТАЛЬНЫХ КАТЕГОРИЙ — КАРУСЕЛЬ -->
+        <div v-else>
+          <SwipeCarousel :apps="cat.apps" />
+        </div>
+
+      </SectionBlock>
     </div>
-
-    <!-- POPULAR -->
-    <SectionBlock title="Категория 1 (популярное)">
-      <div class="flex flex-col divide-y divide-gray-200">
-        <AppRowWhite
-            v-for="app in popularFiltered"
-            :key="app.app_id"
-            :app="app"
-        />
-      </div>
-    </SectionBlock>
-
-    <!-- BANKS -->
-    <SectionBlock title="Банки">
-      <div class="w-full h-40 bg-gray-100 rounded-3xl flex items-center justify-center shadow-inner text-gray-700 font-medium">
-        Банковская подборка
-      </div>
-    </SectionBlock>
-
-    <!-- EDITORS CHOICE -->
-    <SectionBlock title="Выбор редакции">
-      <div class="flex flex-col divide-y divide-gray-200">
-        <AppRowWhite
-            v-for="app in editorsChoice"
-            :key="app.app_id"
-            :app="app"
-        />
-      </div>
-    </SectionBlock>
-
-    <!-- RECENT -->
-    <SectionBlock title="Вы недавно смотрели">
-      <div class="flex flex-col divide-y divide-gray-200">
-        <AppRowWhite
-            v-for="app in recent"
-            :key="app.app_id"
-            :app="app"
-        />
-      </div>
-    </SectionBlock>
 
   </div>
 </template>
 
 <script>
-import appsJson from "@/data/apps.json";
-import SectionBlock from "@/components/UI/SectionBlock.vue";
-import AppRowWhite from "@/components/AppRowWhite.vue";
+import Banner from "@/components/UI/Banner.vue"
+import SectionBlock from "@/components/UI/SectionBlock.vue"
+import SwipeCarousel from "@/components/SwipeCarousel.vue"
+import AppRowWhite from "@/components/AppRowWhite.vue"
+
+// JSON от бэка, формата:
+// { "categories": [ { "category_name": "...", "apps": [ { app_id, app_name, app_category } ] } ] }
+import json from "@/data/apps.json"
 
 export default {
-  components: { SectionBlock, AppRowWhite },
+  components: { Banner, SectionBlock, SwipeCarousel, AppRowWhite },
 
   data() {
     return {
       query: "",
-      apps: appsJson
-    };
+      categories: json.categories
+    }
   },
 
   computed: {
-    popularFiltered() {
-      return this.apps.filter(a => a.popular);
-    },
-    editorsChoice() {
-      return this.apps.filter(a => a.editorsChoice);
-    },
-    recent() {
-      return this.apps.filter(a => a.recent);
+    filteredCategories() {
+      const q = this.query.trim().toLowerCase()
+      if (!q) return this.categories
+
+      // фильтруем вложенные приложения по имени/жанру
+      return this.categories
+          .map(category => ({
+            ...category,
+            apps: category.apps.filter(app =>
+                app.app_name.toLowerCase().includes(q) ||
+                app.app_category.toLowerCase().includes(q)
+            )
+          }))
+          // убираем категории, где после фильтрации нет приложений
+          .filter(category => category.apps.length > 0)
     }
   }
-};
+}
 </script>
