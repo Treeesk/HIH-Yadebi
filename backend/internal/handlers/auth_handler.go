@@ -26,7 +26,7 @@ type AuthRequest struct {
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var req AuthRequest
+	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Printf("invalid request: %v\n", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
@@ -47,6 +47,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	user := models.User{
 		Name:         req.Username,
 		PasswordHash: hash,
+		Name:         req.Name,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
