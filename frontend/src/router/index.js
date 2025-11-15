@@ -16,6 +16,11 @@ const routes = [
     {
         path: '/search',
         component:  Search
+    },
+    {
+        path: '/app/:id',
+        name: 'app-detail',
+        component: () => import('@/pages/AppDetail.vue')
     }
 ]
 
