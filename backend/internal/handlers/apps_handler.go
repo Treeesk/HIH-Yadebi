@@ -2,49 +2,47 @@ package handlers
 
 import (
 	"hih-yadebi-backend/internal/database"
-	"hih-yadebi-backend/internal/models"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type AppsHandler struct {
-	Repo *database.AppRepository
+type AppHandler struct {
+	AppRepo *database.AppRepository
 }
 
-func NewAppsHandler(repo *database.AppRepository) *AppsHandler {
-	return &AppsHandler{Repo: repo}
+func NewAppHandler(repo *database.AppRepository) *AppHandler {
+	return &AppHandler{AppRepo: repo}
 }
-func (h *AppsHandler) Create(c *gin.Context) {
-	var req models.App
-
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
+func (h *AppHandler) GetByID(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 
-	// вызывать обязательно через контекст
 	ctx := c.Request.Context()
 
-	// важно: передаём указатель
-	err := h.Repo.CreateApp(ctx, &req)
+	app, err := h.AppRepo.GetAppByID(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
 	}
 
-	// req.ID уже заполнен QueryRowContext
-	c.JSON(http.StatusOK, gin.H{
-		"status": "created",
-		"id":     req.ID,
-	})
+	if app == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "app not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, app)
 }
 
-func (h *AppsHandler) GetPopular(c *gin.Context) {
+func (h *AppHandler) GetPopular(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, _ := strconv.Atoi(limitStr)
-	ids, err := h.Repo.GetPopularApps(limit)
+	ids, err := h.AppRepo.GetPopularApps(limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
@@ -52,10 +50,10 @@ func (h *AppsHandler) GetPopular(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"ids": ids})
 }
-func (h *AppsHandler) GetNewApp(c *gin.Context) {
+func (h *AppHandler) GetNewApp(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, _ := strconv.Atoi(limitStr)
-	top_date, err := h.Repo.GetNewApps(limit)
+	top_date, err := h.AppRepo.GetNewApps(limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "db error"})
 		return
