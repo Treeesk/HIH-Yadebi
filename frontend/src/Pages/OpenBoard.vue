@@ -1,11 +1,14 @@
-<script setup>
-
-</script>
-
 <template>
-  $END$
+  <OpenBoardLayout />
 </template>
 
-<style scoped>
+<script>
+import OpenBoardLayout from '@/components/Layout/OpenBoardLayout.vue'
 
-</style>
+export default {
+  name: 'OpenBoard',
+  components: {
+    OpenBoardLayout
+  }
+}
+</script>
