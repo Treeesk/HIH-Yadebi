@@ -21,7 +21,7 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 			title, description, size_mb, age_rating, downloads,
 			version, link_cloud, developer_id, category_id, created_at
 		)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 		RETURNING id, created_at
 	`
 
