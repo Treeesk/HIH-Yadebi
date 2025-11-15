@@ -19,8 +19,7 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 	query := `
 		INSERT INTO apps (
 			title, description, size_mb, age_rating, downloads,
-			version, link_apk, link_icon_small, link_icon_large, link_screenshots,
-			developer_id, category_id, created_at
+			version, link_cloud, developer_id, category_id, created_at
 		)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 		RETURNING id, created_at
@@ -33,10 +32,7 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 		app.AgeRating,
 		app.Downloads,
 		app.Version,
-		app.LinkApk,
-		app.LinkIconSmall,
-		app.LinkIconLarge,
-		app.LinkScreens,
+		app.LinkCloud,
 		app.DeveloperID,
 		app.CategoryID,
 		time.Now(),
@@ -48,16 +44,14 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 
 	query := `
 		SELECT id, title, description, size_mb, age_rating, downloads,
-		       version, link_apk, link_icon_small, link_icon_large, link_screenshots,
-		       developer_id, category_id, created_at
+		       version, link_cloud, developer_id, category_id, created_at
 		FROM apps WHERE id = $1
 	`
 
 	row := r.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&app.ID, &app.Title, &app.Description, &app.SizeMB,
-		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkApk,
-		&app.LinkIconSmall, &app.LinkIconLarge, &app.LinkScreens,
+		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud, 
 		&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
@@ -79,6 +73,6 @@ func (r *AppRepository) GetAppByCategoryID(ctx context.Context, category_id int)
 	}
 	for row.Next() {
 		var app models.App
-		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID, &app.LinkIconSmall)
+		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID) // хюйня с маленькой иконкой была
 	}
 }

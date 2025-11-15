@@ -38,10 +38,7 @@ type App struct {
 	Downloads     int64     `json:"downloads"`
 	// Rating      float64   `json:"rating"`
 	Version       string    `json:"version"`
-	LinkApk       string    `json:"link_apk"`
-	LinkIconSmall string    `json:"link_icon_small"`
-	LinkIconLarge string    `json:"link_icon_large"`
-	LinkScreens   string    `json:"link_screenshots"`
+	LinkCloud       string    `json:"link_cloud"`
 	DeveloperID   int       `json:"developer_id"`
 	CategoryID    int       `json:"category_id"`
 	CreatedAt     time.Time `json:"created_at"`
