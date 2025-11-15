@@ -10,5 +10,14 @@ export default defineConfig({
             "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
             "@data": fileURLToPath(new URL("./src/data", import.meta.url)),
         }
+    },
+    server: {
+        proxy: {
+            '/api': {
+                target: 'http://192.168.2.189:8080',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, '')
+            }
+        }
     }
 });

@@ -144,8 +144,9 @@ export default {
 
         if (response.ok) {
           // Регистрация успешна - показываем модалку подтверждения email
-          this.$emit('register-success', this.registerData.email)
+        //  this.$emit('register-success', this.registerData.email)
           this.$emit('close')
+          alert("Регистрация успешна!");
         } else {
           // Обрабатываем ошибки согласно API
           switch (response.status) {
