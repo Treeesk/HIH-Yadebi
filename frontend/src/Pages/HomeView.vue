@@ -1,56 +1,44 @@
 <template>
-  <div class="w-full min-h-screen bg-white pb-10">
+  <div class="w-full min-h-screen bg-white px-4 pt-4 pb-24 overflow-x-hidden">
 
-    <!-- 🔥 НОВЫЙ ВЕРХНИЙ BAR -->
-    <div class="w-full flex items-center justify-between py-3 px-4 bg-white">
-
-      <!-- Стрелка назад НЕ показывается на главной -->
-      <button class="opacity-0 pointer-events-none text-xl">←</button>
-
-      <!-- Поле поиска (НЕ input, а кнопка) -->
-      <div
-          class="flex items-center bg-gray-100 rounded-full px-4 py-2 w-full mx-3 active:scale-95 transition cursor-pointer"
-          @click="$router.push('/search')"
-      >
-        <span class="text-gray-400 mr-3 text-lg">🔍</span>
-        <span class="text-gray-500 text-base flex-1">Поиск приложений</span>
-      </div>
-
-      <!-- Профиль -->
-      <button
-          @click="$router.push('/profile')"
-          class="text-gray-700 text-2xl active:scale-90 transition"
-      >
-        👤
-      </button>
+    <!-- Поиск -->
+    <div class="bg-gray-100 w-full rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
+      <span class="text-gray-500 text-xl">🔍</span>
+      <input
+          type="text"
+          v-model="query"
+          placeholder="Поиск приложений"
+          class="flex-1 bg-transparent outline-none text-gray-900"
+      />
+      <span class="text-gray-600 text-xl">👤</span>
     </div>
 
-    <!-- БАННЕР -->
-    <Banner text="MAX — приложение дня" class="px-4" />
+    <!-- Баннер -->
+    <Banner class="mt-6" text="MAX — приложение дня" />
 
-    <!-- КАТЕГОРИИ -->
+    <!-- Категории -->
     <div
         v-for="cat in filteredCategories"
         :key="cat.category_name"
-        class="mt-8 px-4"
+        class="mt-10"
     >
       <SectionBlock :title="cat.category_name">
 
-        <!-- Банки: обычный список -->
-        <template v-if="cat.category_name === 'Банки'">
-          <div class="flex flex-col gap-3">
+        <!-- КАТЕГОРИЯ: Банки (вертикальный список) -->
+        <div v-if="cat.category_name.toLowerCase() === 'банк' || cat.category_name.toLowerCase() === 'банки' || cat.category_name.toLowerCase() === 'финансы'">
+          <div class="flex flex-col divide-y divide-gray-100">
             <AppRowWhite
                 v-for="app in cat.apps"
                 :key="app.app_id"
                 :app="app"
             />
           </div>
-        </template>
+        </div>
 
-        <!-- Остальные: свайп-карусель -->
-        <template v-else>
+        <!-- ВСЕ ОСТАЛЬНЫЕ КАТЕГОРИИ -->
+        <div v-else>
           <SwipeCarousel :apps="cat.apps" />
-        </template>
+        </div>
 
       </SectionBlock>
     </div>
@@ -61,34 +49,45 @@
 <script>
 import Banner from "@/components/UI/Banner.vue"
 import SectionBlock from "@/components/UI/SectionBlock.vue"
-import SwipeCarousel from "@/components/SwipeCarousel.vue"
 import AppRowWhite from "@/components/AppRowWhite.vue"
+import SwipeCarousel from "@/components/SwipeCarousel.vue"
 
 import json from "@/data/apps.json"
 
 export default {
-  name: "HomeView",
-
   components: {
     Banner,
     SectionBlock,
+    AppRowWhite,
     SwipeCarousel,
-    AppRowWhite
   },
 
   data() {
     return {
+      query: "",
       categories: json.categories
     }
   },
 
   computed: {
     filteredCategories() {
+      const q = this.query.trim().toLowerCase()
+      if (!q) return this.categories
+
       return this.categories
+          .map(cat => ({
+            ...cat,
+            apps: cat.apps.filter(app =>
+                app.app_name.toLowerCase().includes(q) ||
+                app.app_category.toLowerCase().includes(q)
+            )
+          }))
+          .filter(cat => cat.apps.length > 0)
     }
   }
 }
 </script>
 
 <style scoped>
+/* без ограничений ширины */
 </style>

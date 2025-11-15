@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
+  <div id="app" class="w-full min-h-screen bg-white overflow-x-hidden">
     <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
 }
 </script>
 
@@ -14,18 +14,9 @@ export default {
 html, body, #app {
   margin: 0;
   padding: 0;
-
-  /* Разрешаем скролл везде */
-  overflow-y: auto !important;
-
-  /* Белый фон — безопасно */
-  background: #ffffff !important;
-
-  /* Плавная мобильная прокрутка */
-  -webkit-overflow-scrolling: touch;
-
-  /* ❗ Главное исправление — УБРАТЬ высоту 100% */
-  height: auto !important;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overscroll-behavior-y: contain;
 }
 </style>
