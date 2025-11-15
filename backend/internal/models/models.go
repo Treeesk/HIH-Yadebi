@@ -1,7 +1,5 @@
 package models
 
-import "time"
-
 // ========================
 // USERS
 // ========================
@@ -10,7 +8,7 @@ type User struct {
 	Name      string    `json:"login"`
 	Password  string    `json:"password"` // хранится хеш!
 	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"created_at"`
+	// CreatedAt time.Time `json:"created_at"`
 }
 
 // ========================
@@ -48,7 +46,7 @@ type Review struct {
 	AppID   int    `json:"app_id"`
 	Score   int    `json:"score"`
 	Comment string `json:"comment"`
-	Helpful int    `json:"helpful"`
+	// Helpful int    `json:"helpful"`
 }
 
 // ========================
@@ -58,4 +56,12 @@ type UserApp struct {
 	ID     int `json:"id"`
 	UserID int `json:"user_id"`
 	AppID  int `json:"app_id"`
+}
+
+type Developer struct {
+	ID        int       `json:"id"`
+	Name      string    `json:"login"`
+	Password  string    `json:"password"` // хранится хеш!
+	Email     string    `json:"email"`
+	// CreatedAt time.Time `json:"created_at"`
 }

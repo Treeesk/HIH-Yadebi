@@ -16,7 +16,7 @@ func NewReviewRepository(db *sql.DB) *ReviewRepository {
 
 func (r *ReviewRepository) CreateReview(ctx context.Context, review *models.Review) error {
 	query := `
-		INSERT INTO reviews (user_id, app_id, score, comment, helpful)
+		INSERT INTO reviews (user_id, app_id, score, comment)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
@@ -26,13 +26,13 @@ func (r *ReviewRepository) CreateReview(ctx context.Context, review *models.Revi
 		review.AppID,
 		review.Score,
 		review.Comment,
-		review.Helpful,
+		// review.Helpful,
 	).Scan(&review.ID)
 }
 
 func (r *ReviewRepository) GetReviewsByApp(ctx context.Context, appID int) ([]models.Review, error) {
 	rows, err := r.DB.QueryContext(ctx, `
-		SELECT id, user_id, app_id, score, comment, helpful
+		SELECT id, user_id, app_id, score, comment
 		FROM reviews WHERE app_id = $1
 	`, appID)
 	if err != nil {
@@ -43,7 +43,7 @@ func (r *ReviewRepository) GetReviewsByApp(ctx context.Context, appID int) ([]mo
 	var list []models.Review
 	for rows.Next() {
 		var r models.Review
-		if err := rows.Scan(&r.ID, &r.UserID, &r.AppID, &r.Score, &r.Comment, &r.Helpful); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.AppID, &r.Score, &r.Comment); err != nil {
 			return nil, err
 		}
 		list = append(list, r)

@@ -26,10 +26,10 @@ CREATE TABLE apps (
     size_mb NUMERIC(10,2),
     age_rating VARCHAR(50),
     downloads BIGINT DEFAULT 0,
-    rating NUMERIC(3,2) DEFAULT 0,
+    -- rating NUMERIC(3,2) DEFAULT 0,
     version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
-    apk TEXT,
-    developer_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    link_apk TEXT,
+    developer_id INTEGER NOT NULL REFERENCES developer(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL
 );
 
@@ -42,7 +42,7 @@ CREATE TABLE reviews (
     app_id INTEGER NOT NULL REFERENCES apps(id) ON DELETE CASCADE,
     score INTEGER NOT NULL CHECK (score BETWEEN 1 AND 5),
     comment TEXT,
-    helpful INTEGER DEFAULT 0,
+    -- helpful INTEGER DEFAULT 0,
     UNIQUE(user_id, app_id) -- один отзыв на приложение от пользователя
 );
 
@@ -55,4 +55,11 @@ CREATE TABLE user_apps (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     app_id INTEGER NOT NULL REFERENCES apps(id) ON DELETE CASCADE,
     UNIQUE(user_id, app_id) -- пользователь не может иметь одно приложение 2 раза
+);
+
+CREATE TABLE developers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE
 );
