@@ -4,7 +4,7 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE
 );
 
@@ -13,7 +13,7 @@ CREATE TABLE users (
 -- =========================
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
+    title VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- =========================
@@ -29,9 +29,9 @@ CREATE TABLE apps (
     -- rating NUMERIC(3,2) DEFAULT 0,
     version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
     link_apk TEXT,
-    icon_small TEXT,       -- ссылка на маленькую иконку
-    icon_large TEXT,       -- ссылка на большую иконку
-    screenshots TEXT,      -- JSON-массив ссылок на скриншоты
+    link_icon_small TEXT,       -- ссылка на маленькую иконку
+    link_icon_large TEXT,       -- ссылка на большую иконку
+    link_screenshots TEXT,      -- JSON-массив ссылок на скриншоты
     developer_id INTEGER NOT NULL REFERENCES developer(id) ON DELETE CASCADE,
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()  -- дата и время добавления приложения
@@ -46,6 +46,7 @@ CREATE TABLE reviews (
     app_id INTEGER NOT NULL REFERENCES apps(id) ON DELETE CASCADE,
     score INTEGER NOT NULL CHECK (score BETWEEN 1 AND 5),
     comment TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW() 
     -- helpful INTEGER DEFAULT 0,
     UNIQUE(user_id, app_id) -- один отзыв на приложение от пользователя
 );
@@ -64,6 +65,6 @@ CREATE TABLE user_apps (
 CREATE TABLE developers (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE
 );

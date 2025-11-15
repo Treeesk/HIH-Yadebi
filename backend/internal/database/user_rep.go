@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) error {
 	query := `
-		INSERT INTO users (name, password, email)
+		INSERT INTO users (name, password_hash, email)
 		VALUES ($1, $2, $3)
 		RETURNING id
 	`
@@ -33,7 +33,7 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, name string) (*mode
 	user := &models.User{}
 
 	query := `
-		SELECT id, name, password, email 
+		SELECT id, name, password_hash, email
 		FROM users WHERE name = $1
 	`
 
@@ -45,3 +45,4 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, name string) (*mode
 	}
 	return user, err
 }
+

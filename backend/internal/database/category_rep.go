@@ -15,12 +15,12 @@ func NewCategoryRepository(db *sql.DB) *CategoryRepository {
 }
 
 func (r *CategoryRepository) CreateCategory(ctx context.Context, cat *models.Category) error {
-	query := `INSERT INTO categories (name) VALUES ($1) RETURNING id`
-	return r.DB.QueryRowContext(ctx, query, cat.Name).Scan(&cat.ID)
+	query := `INSERT INTO categories (title) VALUES ($1) RETURNING id`
+	return r.DB.QueryRowContext(ctx, query, cat.Title).Scan(&cat.ID)
 }
 
 func (r *CategoryRepository) GetAll(ctx context.Context) ([]models.Category, error) {
-	rows, err := r.DB.QueryContext(ctx, `SELECT id, name FROM categories`)
+	rows, err := r.DB.QueryContext(ctx, `SELECT id, title FROM categories`)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (r *CategoryRepository) GetAll(ctx context.Context) ([]models.Category, err
 	var list []models.Category
 	for rows.Next() {
 		var c models.Category
-		if err := rows.Scan(&c.ID, &c.Name); err != nil {
+		if err := rows.Scan(&c.ID, &c.Title); err != nil {
 			return nil, err
 		}
 		list = append(list, c)

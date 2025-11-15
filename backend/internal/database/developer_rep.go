@@ -4,44 +4,43 @@ import (
 	"context"
 	"database/sql"
 	"hih-yadebi-backend/internal/models"
-	// "time"
 )
 
 type DeveloperRepository struct {
 	DB *sql.DB
 }
 
-func NewDeveloperRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{DB: db}
+func NewDeveloperRepository(db *sql.DB) *DeveloperRepository {
+	return &DeveloperRepository{DB: db}
 }
 
-func (r *UserRepository) CreateDeveloper(ctx context.Context, developer *models.Developer) error {
+func (r *DeveloperRepository) CreateDeveloper(ctx context.Context, dev *models.Developer) error {
 	query := `
-		INSERT INTO users (name, password, email)
+		INSERT INTO developers (name, password_hash, email)
 		VALUES ($1, $2, $3)
 		RETURNING id
 	`
 
 	return r.DB.QueryRowContext(ctx, query,
-		developer.Name,
-		developer.Password,
-		developer.Email,
-	).Scan(&developer.ID)
+		dev.Name,
+		dev.Password,
+		dev.Email,
+	).Scan(&dev.ID)
 }
 
-func (r *UserRepository) GetDeveloperByLogin(ctx context.Context, name string) (*models.Developer, error) {
-	developer := &models.Developer{}
+func (r *DeveloperRepository) GetDeveloperByLogin(ctx context.Context, name string) (*models.Developer, error) {
+	dev := &models.Developer{}
 
 	query := `
-		SELECT id, name, password, email 
-		FROM users WHERE name = $1
+		SELECT id, name, password_hash, email 
+		FROM developers WHERE name = $1
 	`
 
 	row := r.DB.QueryRowContext(ctx, query, name)
-	err := row.Scan(&developer.ID, &developer.Name, &developer.Password, &developer.Email)
+	err := row.Scan(&dev.ID, &dev.Name, &dev.Password, &dev.Email)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
-	return developer, err
+	return dev, err
 }

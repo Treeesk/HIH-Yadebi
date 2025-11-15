@@ -19,7 +19,7 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 	query := `
 		INSERT INTO apps (
 			title, description, size_mb, age_rating, downloads,
-			version, link_apk, icon_small, icon_large, screenshots,
+			version, link_apk, link_icon_small, link_icon_large, link_screenshots,
 			developer_id, category_id, created_at
 		)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
@@ -32,15 +32,14 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 		app.SizeMB,
 		app.AgeRating,
 		app.Downloads,
-		// app.Rating,
 		app.Version,
 		app.LinkApk,
-		app.IconSmall,
-		app.IconLarge,
-		app.Screenshots,
+		app.LinkIconSmall,
+		app.LinkIconLarge,
+		app.LinkScreens,
 		app.DeveloperID,
 		app.CategoryID,
-		time.Now(), // текущее время для created_at
+		time.Now(),
 	).Scan(&app.ID, &app.CreatedAt)
 }
 
@@ -49,7 +48,7 @@ func (r *AppRepository) GetApp(ctx context.Context, id int) (*models.App, error)
 
 	query := `
 		SELECT id, title, description, size_mb, age_rating, downloads,
-		       version, link_apk, icon_small, icon_large, screenshots,
+		       version, link_apk, link_icon_small, link_icon_large, link_screenshots,
 		       developer_id, category_id, created_at
 		FROM apps WHERE id = $1
 	`
@@ -58,7 +57,7 @@ func (r *AppRepository) GetApp(ctx context.Context, id int) (*models.App, error)
 	err := row.Scan(
 		&app.ID, &app.Title, &app.Description, &app.SizeMB,
 		&app.AgeRating, &app.Downloads, &app.Version, &app.LinkApk,
-		&app.IconSmall, &app.IconLarge, &app.Screenshots,
+		&app.LinkIconSmall, &app.LinkIconLarge, &app.LinkScreens,
 		&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
 	)
 	if err == sql.ErrNoRows {
