@@ -61,18 +61,37 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	return app, err
 }
 
-func (r *AppRepository) GetAppByCategoryID(ctx context.Context, category_id int) ([]*models.App, error) {
+func (r *AppRepository) GetAppByCategoryID(ctx context.Context, categoryID int) ([]*models.App, error) {
 	apps := make([]*models.App, 0)
-	query := ""
-	rows, err := r.DB.QueryContext(ctx, query, category_id)
+
+	query := `
+		SELECT id, title, description, size_mb, age_rating, downloads,
+		       version, link_cloud, developer_id, category_id, created_at
+		FROM apps WHERE category_id = $1
+	`
+
+	rows, err := r.DB.QueryContext(ctx, query, categoryID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
-	for row.Next() {
+	defer rows.Close()
+
+	for rows.Next() {
 		var app models.App
-		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID) // хюйня с маленькой иконкой была
+		if err := rows.Scan(
+			&app.ID, &app.Title, &app.Description, &app.SizeMB,
+			&app.AgeRating, &app.Downloads, &app.Version, &app.LinkCloud,
+			&app.DeveloperID, &app.CategoryID, &app.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		apps = append(apps, &app)
 	}
+
+	// Проверка на пустой результат
+	if len(apps) == 0 {
+		return nil, nil
+	}
+
+	return apps, nil
 }
