@@ -1,46 +1,51 @@
 <template>
-  <div class="mx-auto px-4 py-4 w-full max-w-[480px] bg-white">
+  <!-- ФОН НА ВЕСЬ ЭКРАН -->
+  <div class="w-full min-h-screen bg-white">
 
-    <!-- SEARCH -->
-    <div class="bg-gray-100 w-full rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm">
-      <input
-          type="text"
-          v-model="query"
-          placeholder="Поиск"
-          class="flex-1 bg-transparent outline-none text-gray-900"
-      />
-      <span class="text-gray-500 text-xl">🔍</span>
-    </div>
+    <!-- ЦЕНТРАЛЬНЫЙ КОНТЕЙНЕР -->
+    <div class="mx-auto w-full max-w-[600px] px-3 py-4">
 
-    <!-- БАННЕР: фиксированно показываем MAX -->
-    <Banner text="MAX — приложение дня" />
+      <!-- SEARCH -->
+      <div class="bg-gray-100 w-full rounded-2xl px-4 py-3 flex items-center gap-3 shadow-sm mb-6">
+        <input
+            type="text"
+            v-model="query"
+            placeholder="Поиск"
+            class="flex-1 bg-transparent outline-none text-gray-900"
+        />
+        <span class="text-gray-500 text-xl">🔍</span>
+      </div>
 
-    <!-- ВСЕ КАТЕГОРИИ ИЗ JSON -->
-    <div
-        v-for="cat in filteredCategories"
-        :key="cat.category_name"
-    >
-      <SectionBlock :title="cat.category_name">
+      <!-- БАННЕР: фиксированно показываем MAX -->
+      <Banner text="MAX — приложение дня" />
 
-        <!-- ЕСЛИ ЭТО КАТЕГОРИЯ 'Банки' — ПОКАЗЫВАЕМ ПО ОДНОМУ -->
-        <div v-if="cat.category_name === 'Банки'">
-          <div class="flex flex-col divide-y divide-gray-200">
-            <AppRowWhite
-                v-for="app in cat.apps"
-                :key="app.app_id"
-                :app="app"
-            />
+      <!-- ВСЕ КАТЕГОРИИ ИЗ JSON -->
+      <div
+          v-for="cat in filteredCategories"
+          :key="cat.category_name"
+      >
+        <SectionBlock :title="cat.category_name">
+
+          <!-- ЕСЛИ ЭТО КАТЕГОРИЯ 'Банки' — ПОКАЗЫВАЕМ ПО ОДНОМУ -->
+          <div v-if="cat.category_name === 'Банки'">
+            <div class="flex flex-col divide-y divide-gray-200">
+              <AppRowWhite
+                  v-for="app in cat.apps"
+                  :key="app.app_id"
+                  :app="app"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- ДЛЯ ВСЕХ ОСТАЛЬНЫХ КАТЕГОРИЙ — КАРУСЕЛЬ -->
-        <div v-else>
-          <SwipeCarousel :apps="cat.apps" />
-        </div>
+          <!-- ДЛЯ ВСЕХ ОСТАЛЬНЫХ КАТЕГОРИЙ — КАРУСЕЛЬ -->
+          <div v-else>
+            <SwipeCarousel :apps="cat.apps" />
+          </div>
 
-      </SectionBlock>
+        </SectionBlock>
+      </div>
+
     </div>
-
   </div>
 </template>
 

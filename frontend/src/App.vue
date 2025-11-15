@@ -56,3 +56,9 @@ export default {
   // }
 }
 </script>
+
+<style>
+html, body, #app {
+  background: white !important;
+}
+</style>

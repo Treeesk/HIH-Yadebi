@@ -1,83 +1,72 @@
 <template>
-  <div
-      class="relative overflow-hidden select-none"
-      @touchstart="startSwipe"
-      @touchmove="moveSwipe"
-      @touchend="endSwipe"
-  >
+  <div class="carousel no-scrollbar" ref="container">
+
+    <!-- Каждая страница = 3 карточки В СТОЛБИК -->
     <div
-        class="flex transition-transform duration-500 ease-[cubic-bezier(.16,.84,.44,1)]"
-        :style="{ transform: `translateX(-${currentPage * 100}%)` }"
+        v-for="(page, i) in pages"
+        :key="i"
+        class="carousel-page snap-start"
     >
-    <!-- каждая страница по 3 приложения -->
-      <div
-          v-for="(group, index) in pages"
-          :key="index"
-          class="w-full shrink-0"
-      >
-        <div class="flex flex-col divide-y divide-gray-200">
-          <AppRowWhite
-              v-for="app in group"
-              :key="app.app_id"
-              :app="app"
-          />
-        </div>
+      <div class="flex flex-col gap-2">
+        <SmallCard
+            v-for="app in page"
+            :key="app.app_id"
+            :app="app"
+        />
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
-import AppRowWhite from '@/components/AppRowWhite.vue'
+import SmallCard from "./SmallCard.vue"
 
 export default {
-  components: { AppRowWhite },
-
   props: {
-    apps: {
-      type: Array,
-      required: true
-    }
+    apps: Array
   },
 
-  data() {
-    return {
-      currentPage: 0,
-      touchStartX: 0,
-      touchEndX: 0
-    }
-  },
+  components: { SmallCard },
 
   computed: {
     pages() {
-      const size = 3
+      const size = 3 // ⬅ РОВНО 3 КАРТОЧКИ НА СТРАНИЦУ
       const result = []
-      for (let i = 0; i < this.apps.length; i += size)
+
+      for (let i = 0; i < this.apps.length; i += size) {
         result.push(this.apps.slice(i, i + size))
+      }
+
       return result
-    }
-  },
-
-  methods: {
-    startSwipe(e) {
-      this.touchStartX = e.touches[0].clientX
-    },
-
-    moveSwipe(e) {
-      this.touchEndX = e.touches[0].clientX
-    },
-
-    endSwipe() {
-      const delta = this.touchStartX - this.touchEndX
-
-      if (delta > 50 && this.currentPage < this.pages.length - 1) {
-        this.currentPage++
-      }
-
-      if (delta < -50 && this.currentPage > 0) {
-        this.currentPage--
-      }
     }
   }
 }
 </script>
+
+<style scoped>
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 16px;
+  padding-bottom: 6px;
+}
+
+/* ширина страницы = ширина экрана */
+.carousel-page {
+  flex-shrink: 0;
+  width: 100%;
+  scroll-snap-align: start;
+}
+
+/* скрыть полосу прокрутки */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
