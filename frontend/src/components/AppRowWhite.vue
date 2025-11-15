@@ -16,14 +16,10 @@
           {{ app.app_name }}
         </h3>
 
-        <p class="text-sm text-gray-600 mt-0.5">
-          {{ app.app_categorie }}
+        <!-- GENRE instead of stars -->
+        <p class="text-sm text-gray-600 mt-1">
+          {{ app.app_category }}
         </p>
-
-        <div class="flex items-center gap-1 mt-1">
-          <span class="text-yellow-500 text-sm">★</span>
-          <span class="text-sm text-gray-700">{{ app.rating }}</span>
-        </div>
       </div>
 
     </div>
@@ -45,8 +41,8 @@ export default {
 
   computed: {
     iconUrl() {
-      return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(this.app.app_name)}`;
+      return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(this.app.app_name)}`
     }
   }
-};
+}
 </script>

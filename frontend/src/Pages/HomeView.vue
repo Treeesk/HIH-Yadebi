@@ -12,63 +12,75 @@
       <span class="text-gray-500 text-xl">🔍</span>
     </div>
 
-    <Banner text="Игра которую мы предлагаем" />
+    <!-- БАННЕР: фиксированно показываем MAX -->
+    <Banner text="MAX — приложение дня" />
 
-    <!-- POPULAR -->
-    <SectionBlock title="Категория 1 (популярное)">
-      <SwipeCarousel :apps="popularFiltered" />
-    </SectionBlock>
+    <!-- ВСЕ КАТЕГОРИИ ИЗ JSON -->
+    <div
+        v-for="cat in filteredCategories"
+        :key="cat.category_name"
+    >
+      <SectionBlock :title="cat.category_name">
 
-    <!-- BANKS -->
-    <SectionBlock title="Банки">
-      <SwipeCarousel :apps="banksFiltered" />
-    </SectionBlock>
+        <!-- ЕСЛИ ЭТО КАТЕГОРИЯ 'Банки' — ПОКАЗЫВАЕМ ПО ОДНОМУ -->
+        <div v-if="cat.category_name === 'Банки'">
+          <div class="flex flex-col divide-y divide-gray-200">
+            <AppRowWhite
+                v-for="app in cat.apps"
+                :key="app.app_id"
+                :app="app"
+            />
+          </div>
+        </div>
 
-    <!-- EDITORS -->
-    <SectionBlock title="Выбор редакции">
-      <SwipeCarousel :apps="editorsChoice" />
-    </SectionBlock>
+        <!-- ДЛЯ ВСЕХ ОСТАЛЬНЫХ КАТЕГОРИЙ — КАРУСЕЛЬ -->
+        <div v-else>
+          <SwipeCarousel :apps="cat.apps" />
+        </div>
 
-    <!-- RECENT -->
-    <SectionBlock title="Вы недавно смотрели">
-      <SwipeCarousel :apps="recent" />
-    </SectionBlock>
+      </SectionBlock>
+    </div>
 
   </div>
 </template>
 
 <script>
-import appsJson from "@/data/apps.json"
 import Banner from "@/components/UI/Banner.vue"
 import SectionBlock from "@/components/UI/SectionBlock.vue"
 import SwipeCarousel from "@/components/SwipeCarousel.vue"
+import AppRowWhite from "@/components/AppRowWhite.vue"
+
+// JSON от бэка, формата:
+// { "categories": [ { "category_name": "...", "apps": [ { app_id, app_name, app_category } ] } ] }
+import json from "@/data/apps.json"
 
 export default {
-  components: { Banner, SectionBlock, SwipeCarousel },
+  components: { Banner, SectionBlock, SwipeCarousel, AppRowWhite },
 
   data() {
     return {
       query: "",
-      apps: appsJson
+      categories: json.categories
     }
   },
 
   computed: {
-    filteredApps() {
+    filteredCategories() {
       const q = this.query.trim().toLowerCase()
-      if (!q) return this.apps
-      return this.apps.filter(a =>
-          a.app_name.toLowerCase().includes(q) ||
-          a.app_categorie.toLowerCase().includes(q)
-      )
-    },
+      if (!q) return this.categories
 
-    popularFiltered() { return this.filteredApps.filter(a => a.popular) },
-    editorsChoice() { return this.filteredApps.filter(a => a.editorsChoice) },
-    recent() { return this.filteredApps.filter(a => a.recent) },
-
-    // категория "Банки"
-    banksFiltered() { return this.filteredApps.filter(a => a.bank) }
+      // фильтруем вложенные приложения по имени/жанру
+      return this.categories
+          .map(category => ({
+            ...category,
+            apps: category.apps.filter(app =>
+                app.app_name.toLowerCase().includes(q) ||
+                app.app_category.toLowerCase().includes(q)
+            )
+          }))
+          // убираем категории, где после фильтрации нет приложений
+          .filter(category => category.apps.length > 0)
+    }
   }
 }
 </script>
