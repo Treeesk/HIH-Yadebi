@@ -78,6 +78,9 @@ export default {
           localStorage.setItem('auth_token', data.auth_token)
           this.$emit('close')
           this.$emit('login-success', data)
+
+          // РЕДИРЕКТ НА ГЛАВНУЮ СТРАНИЦУ
+          this.$router.push('/')
         } else {
           // Обрабатываем ТОЛЬКО те статусы, которые есть в API
           switch (response.status) {
@@ -115,6 +118,7 @@ export default {
 </script>
 
 <style scoped>
+/* Стили остаются без изменений */
 .modal-overlay {
   position: fixed;
   top: 0;

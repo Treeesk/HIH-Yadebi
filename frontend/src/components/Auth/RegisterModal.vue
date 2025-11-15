@@ -5,12 +5,21 @@
 
       <h2>Регистрация</h2>
 
-      <!-- Блок для отображения ошибок -->
       <div v-if="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
 
       <form @submit.prevent="handleRegister">
+        <div class="input-group">
+          <label>Имя и фамилия</label>
+          <input
+              v-model="registerData.name"
+              type="text"
+              required
+              placeholder="Введите имя и фамилию"
+          >
+        </div>
+
         <div class="input-group">
           <label>E-mail</label>
           <input
@@ -18,21 +27,7 @@
               type="email"
               required
               placeholder="email@mail.ru"
-              :class="{ 'error': fieldErrors.email }"
           >
-          <div v-if="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</div>
-        </div>
-
-        <div class="input-group">
-          <label>Имя и Фамилия</label>
-          <input
-              v-model="registerData.name"
-              type="text"
-              required
-              placeholder="Иван Иванов"
-              :class="{ 'error': fieldErrors.name }"
-          >
-          <div v-if="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</div>
         </div>
 
         <div class="input-group">
@@ -41,11 +36,8 @@
               v-model="registerData.password"
               type="password"
               required
-              placeholder="Придумайте пароль"
-              :class="{ 'error': fieldErrors.password }"
-              minlength="6"
+              placeholder="Введите пароль"
           >
-          <div v-if="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</div>
         </div>
 
         <button type="submit" class="submit-button" :disabled="loading">
@@ -67,69 +59,16 @@ export default {
   data() {
     return {
       registerData: {
-        email: '',
         name: '',
+        email: '',
         password: ''
       },
       loading: false,
-      errorMessage: '',
-      fieldErrors: {
-        email: '',
-        name: '',
-        password: ''
-      }
+      errorMessage: ''
     }
   },
   methods: {
-    validateForm() {
-      // Сбрасываем ошибки полей
-      this.fieldErrors = { email: '', name: '', password: '' };
-      let isValid = true;
-
-      // Проверка email
-      if (!this.registerData.email) {
-        this.fieldErrors.email = 'Email обязателен';
-        isValid = false;
-      } else if (!this.isValidEmail(this.registerData.email)) {
-        this.fieldErrors.email = 'Введите корректный email';
-        isValid = false;
-      }
-
-      // Проверка имени и фамилии
-      if (!this.registerData.name) {
-        this.fieldErrors.name = 'Имя и фамилия обязательны';
-        isValid = false;
-      } else if (!this.registerData.name.includes(' ')) {
-        this.fieldErrors.name = 'Введите имя и фамилию через пробел';
-        isValid = false;
-      } else if (this.registerData.name.trim().split(' ').length < 2) {
-        this.fieldErrors.name = 'Введите и имя, и фамилию';
-        isValid = false;
-      }
-
-      // Проверка пароля
-      if (!this.registerData.password) {
-        this.fieldErrors.password = 'Пароль обязателен';
-        isValid = false;
-      } else if (this.registerData.password.length < 6) {
-        this.fieldErrors.password = 'Пароль должен быть не менее 6 символов';
-        isValid = false;
-      }
-
-      return isValid;
-    },
-
-    isValidEmail(email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
-    },
-
     async handleRegister() {
-      // Валидация формы
-      if (!this.validateForm()) {
-        return;
-      }
-
       this.loading = true
       this.errorMessage = ''
 
@@ -143,12 +82,18 @@ export default {
         })
 
         if (response.ok) {
-          // Регистрация успешна - показываем модалку подтверждения email
-        //  this.$emit('register-success', this.registerData.email)
+          const data = await response.json()
           this.$emit('close')
-          alert("Регистрация успешна!");
+          this.$emit('register-success', this.registerData.email)
+
+          // ДОБАВЛЯЕМ ПРОВЕРКУ НАЛИЧИЯ ROUTER И РЕДИРЕКТИМ
+          if (this.$router) {
+            this.$router.push('/')
+          } else {
+            // Если router недоступен, используем window.location
+            window.location.href = '/'
+          }
         } else {
-          // Обрабатываем ошибки согласно API
           switch (response.status) {
             case 400:
               this.errorMessage = 'Некорректный запрос. Проверьте введенные данные.'
@@ -169,21 +114,6 @@ export default {
       } finally {
         this.loading = false
       }
-    }
-  },
-  watch: {
-    // Сбрасываем ошибки когда пользователь начинает вводить данные
-    'registerData.email'() {
-      this.fieldErrors.email = '';
-      this.errorMessage = '';
-    },
-    'registerData.name'() {
-      this.fieldErrors.name = '';
-      this.errorMessage = '';
-    },
-    'registerData.password'() {
-      this.fieldErrors.password = '';
-      this.errorMessage = '';
     }
   }
 }
@@ -264,16 +194,6 @@ input {
 input:focus {
   border-color: #3B82F6;
   outline: none;
-}
-
-input.error {
-  border-color: #DC2626;
-}
-
-.field-error {
-  color: #DC2626;
-  font-size: 12px;
-  margin-top: 5px;
 }
 
 .submit-button {

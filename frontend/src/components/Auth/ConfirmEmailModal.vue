@@ -75,6 +75,9 @@ export default {
           localStorage.setItem('auth_token', data.auth_token);
           this.$emit('close');
           this.$emit('confirm-success', data);
+
+          // РЕДИРЕКТ НА ГЛАВНУЮ СТРАНИЦУ ПОСЛЕ ПОДТВЕРЖДЕНИЯ
+          this.$router.push('/');
         } else {
           switch (response.status) {
             case 400:
