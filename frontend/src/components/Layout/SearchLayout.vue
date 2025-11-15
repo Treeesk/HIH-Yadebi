@@ -2,7 +2,7 @@
   <div class="search-layout min-h-screen bg-gray-50">
     <!-- Хедер с поиском -->
     <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="container mx-auto px-4 py-3">
+      <div class="w-full px-4 py-3">
         <div class="flex items-center gap-3">
           <!-- Кнопка назад -->
           <button
@@ -52,16 +52,19 @@
       </div>
     </header>
 
-    <!-- Основной контент с фиксированной высотой для скролла -->
-    <main class="container mx-auto px-4 h-[calc(100vh-80px)] overflow-y-auto">
-      <slot
-          :search-query="searchQuery"
-          :is-loading="isLoading"
-          :categories="categories"
-          :search-results="searchResults"
-          :perform-search="performSearch"
-          :clear-search="clearSearch"
-      ></slot>
+    <!-- Основной контент -->
+    <main class="w-full h-[calc(100vh-80px)] overflow-y-auto">
+      <div :class="isMobile ? 'w-full' : 'container mx-auto px-4'">
+        <slot
+            :search-query="searchQuery"
+            :is-loading="isLoading"
+            :categories="categories"
+            :search-results="searchResults"
+            :perform-search="performSearch"
+            :clear-search="clearSearch"
+            :is-mobile="isMobile"
+        ></slot>
+      </div>
     </main>
   </div>
 </template>
@@ -95,34 +98,38 @@ export default {
         { category_id: 19, category_title: "Фото" },
         { category_id: 20, category_title: "Видео" }
       ],
-      searchResults: []
+      searchResults: [],
+      isMobile: false
     }
   },
   mounted() {
+    // Определяем тип устройства
+    this.isMobile = this.checkIsMobile()
+
     // Фокус на поле ввода на мобильных устройствах
-    if (this.isMobile() && this.$refs.searchInput) {
+    if (this.isMobile && this.$refs.searchInput) {
       setTimeout(() => {
         this.$refs.searchInput.focus()
+        setTimeout(() => {
+          this.$refs.searchInput.focus()
+        }, 100)
       }, 300)
     }
   },
   methods: {
-    // Простая проверка мобильного устройства
-    isMobile() {
-      return window.innerWidth < 768
+    checkIsMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          window.innerWidth < 768
     },
 
-    // Навигация назад
     goBack() {
       this.$router.push('/')
     },
 
-    // Переход в профиль
     goToProfile() {
       alert('Переход в профиль пользователя')
     },
 
-    // Выполнение поиска
     performSearch() {
       if (!this.searchQuery.trim()) {
         this.clearSearch()
@@ -131,7 +138,6 @@ export default {
 
       this.isLoading = true
 
-      // Простая имитация поиска
       setTimeout(() => {
         this.searchResults = [
           { app_id: 1, title: `${this.searchQuery} Game`, developer: "Game Studio", category: "Игры" },
@@ -150,7 +156,6 @@ export default {
       }, 500)
     },
 
-    // Очистка поиска
     clearSearch() {
       this.searchQuery = ''
       this.searchResults = []
@@ -173,7 +178,21 @@ export default {
   min-height: 100vh;
 }
 
-/* Кастомный скроллбар */
+/* Убираем ВСЕ отступы на мобильных */
+@media (max-width: 767px) {
+  .search-layout {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  main {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
 .h-\[calc\(100vh-80px\)\]::-webkit-scrollbar {
   width: 4px;
 }
