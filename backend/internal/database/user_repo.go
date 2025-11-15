@@ -46,7 +46,7 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	return user, err
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, id int) (*models.User, error) {
+func (r *UserRepository) GetUserByID(ctx context.Context, id int) (*models.User, error) {
 	user := &models.User{}
 
 	query := ""

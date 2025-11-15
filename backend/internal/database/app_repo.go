@@ -43,7 +43,7 @@ func (r *AppRepository) CreateApp(ctx context.Context, app *models.App) error {
 	).Scan(&app.ID, &app.CreatedAt)
 }
 
-func (r *AppRepository) GetApp(ctx context.Context, id int) (*models.App, error) {
+func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, error) {
 	app := &models.App{}
 
 	query := `
@@ -65,4 +65,20 @@ func (r *AppRepository) GetApp(ctx context.Context, id int) (*models.App, error)
 	}
 
 	return app, err
+}
+
+func (r *AppRepository) GetAppByCategoryID(ctx context.Context, category_id int) ([]*models.App, error) {
+	apps := make([]*models.App, 0)
+	query := ""
+	rows, err := r.DB.QueryContext(ctx, query, category_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	for row.Next() {
+		var app models.App
+		err := rows.Scan(&app.ID, &app.Title, &app.CategoryID, &app.LinkIconSmall)
+	}
 }
