@@ -15,7 +15,7 @@ INSERT INTO users (name, password_hash, email) VALUES
 -- ============================
 INSERT INTO categories (title) VALUES
                                    ('Games'), ('Social'), ('Education'), ('Tools'),
-                                   ('Music'), ('Video')
+                                   ('Music'), ('Video'), ('Health')
     ON CONFLICT DO NOTHING;
 
 -- ============================
@@ -122,8 +122,7 @@ VALUES
      '4.0.2', 'https://example.com/app/shoppingcart.apk',
      (SELECT id FROM developers WHERE name='TechInnovate'),
      (SELECT id FROM categories WHERE title='Tools'),
-     NOW())
-        ,
+     NOW()),
     ('MindRelax', 'Meditation and breathing exercises', 52.30, '3+', 210000,
      '1.9.0', 'https://example.com/app/mindrelax.apk',
      (SELECT id FROM developers WHERE name='SuperDev'),

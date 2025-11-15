@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS developers (
 -- =========================
 CREATE TABLE IF NOT EXISTS apps (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     size_mb NUMERIC(10,2),
     age_rating VARCHAR(50),
