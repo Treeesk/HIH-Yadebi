@@ -36,3 +36,22 @@ func (r *CategoryRepository) GetAll(ctx context.Context) ([]models.Category, err
 	}
 	return list, nil
 }
+
+func (r *CategoryRepository) GetCategoryByID(ctx context.Context, id int) (*models.Category, error){
+	category := &models.Category{}
+
+	query := `
+		SELECT id, title
+		FROM categories WHERE id = $1
+	`
+
+	row := r.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&category.ID, &category.Title,
+	)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return category, err
+}
