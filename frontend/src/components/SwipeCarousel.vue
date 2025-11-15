@@ -1,14 +1,14 @@
 <template>
-  <div class="carousel no-scrollbar" ref="container">
+  <div class="carousel no-scrollbar">
 
-    <!-- Каждая страница = 3 карточки В СТОЛБИК -->
+    <!-- Каждая страница = 3 приложения -->
     <div
-        v-for="(page, i) in pages"
-        :key="i"
-        class="carousel-page snap-start"
+        v-for="(page, index) in pages"
+        :key="index"
+        class="carousel-page"
     >
-      <div class="flex flex-col gap-2">
-        <SmallCard
+      <div class="flex flex-col gap-3">
+        <AppRowWhite
             v-for="app in page"
             :key="app.app_id"
             :app="app"
@@ -20,24 +20,22 @@
 </template>
 
 <script>
-import SmallCard from "./SmallCard.vue"
+import AppRowWhite from "@/components/AppRowWhite.vue"
 
 export default {
+  name: "SwipeCarousel",
+  components: { AppRowWhite },
   props: {
     apps: Array
   },
 
-  components: { SmallCard },
-
   computed: {
     pages() {
-      const size = 3 // ⬅ РОВНО 3 КАРТОЧКИ НА СТРАНИЦУ
+      const chunkSize = 3
       const result = []
-
-      for (let i = 0; i < this.apps.length; i += size) {
-        result.push(this.apps.slice(i, i + size))
+      for (let i = 0; i < this.apps.length; i += chunkSize) {
+        result.push(this.apps.slice(i, i + chunkSize))
       }
-
       return result
     }
   }
@@ -51,17 +49,17 @@ export default {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   gap: 16px;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
 }
 
-/* ширина страницы = ширина экрана */
 .carousel-page {
   flex-shrink: 0;
   width: 100%;
   scroll-snap-align: start;
+  padding-right: 4px;
 }
 
-/* скрыть полосу прокрутки */
+/* убираем скроллбар */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

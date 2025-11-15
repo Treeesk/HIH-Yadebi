@@ -1,6 +1,5 @@
 <template>
   <div class="open-board-layout">
-    <!-- Логотип -->
     <div class="logo-section">
       <img
           src="@/assets/logos/rustore-logo.svg"
@@ -11,23 +10,16 @@
       <p class="welcome-subtitle">Откройте для себя мир российских приложений</p>
     </div>
 
-    <!-- Кнопки действий -->
     <div class="actions-section">
-      <button
-          class="auth-button primary"
-          @click="showLoginModal = true"
-      >
+      <button class="auth-button primary" @click="showLoginModal = true">
         войти/зарегистрироваться
       </button>
-      <button
-          class="auth-button secondary"
-          @click="goToHome"
-      >
+
+      <button class="auth-button secondary" @click="goToHome">
         Пропустить
       </button>
     </div>
 
-    <!-- Модальные окна -->
     <LoginModal
         v-if="showLoginModal"
         @close="showLoginModal = false"
@@ -41,7 +33,6 @@
         @register-success="handleRegisterSuccess"
     />
 
-    <!-- Добавь если используешь подтверждение email -->
     <ConfirmEmailModal
         v-if="showConfirmModal"
         :user-email="userEmail"
@@ -58,11 +49,8 @@ import ConfirmEmailModal from '@/components/Auth/ConfirmEmailModal.vue'
 
 export default {
   name: 'OpenBoardLayout',
-  components: {
-    LoginModal,
-    RegisterModal,
-    ConfirmEmailModal
-  },
+  components: { LoginModal, RegisterModal, ConfirmEmailModal },
+
   data() {
     return {
       showLoginModal: false,
@@ -71,50 +59,37 @@ export default {
       userEmail: ''
     }
   },
+
   methods: {
     goToHome() {
-      this.$router.push('/');
+      this.$router.push('/')
     },
 
-    // Переключение на форму регистрации
     switchToRegister() {
-      this.showLoginModal = false;
-      this.showRegisterModal = true;
+      this.showLoginModal = false
+      this.showRegisterModal = true
     },
 
-    // Переключение на форму входа
     switchToLogin() {
-      this.showRegisterModal = false;
-      this.showLoginModal = true;
+      this.showRegisterModal = false
+      this.showLoginModal = true
     },
 
-    // Обработка успешной регистрации
     handleRegisterSuccess(email) {
-      this.userEmail = email;
-      this.showConfirmModal = true;
+      this.userEmail = email
+      this.showConfirmModal = true
     },
 
-    // Обработка успешного подтверждения email
-    handleConfirmSuccess(tokenData) {
-      console.log('User confirmed email and got token:', tokenData);
-      // Можно перенаправить на главную страницу
-      this.$router.push('/');
+    handleConfirmSuccess(token) {
+      this.$router.push('/')
     }
-  },
-  mounted() {
-    document.body.style.overflow = 'hidden';
-  },
-  beforeUnmount() {
-    document.body.style.overflow = 'auto';
   }
 }
 </script>
 
 <style scoped>
-/* Твои существующие стили остаются без изменений */
 .open-board-layout {
   min-height: 100vh;
-  height: 100vh;
   background: #FFFFFF;
   display: flex;
   flex-direction: column;
@@ -123,13 +98,7 @@ export default {
   padding: 20px;
   color: #000000;
   text-align: center;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
+  /* ❗ убрали h=100vh, fixed, overflow-hidden */
 }
 
 .logo-section {
@@ -140,7 +109,6 @@ export default {
   align-items: center;
   justify-content: center;
   flex: 1;
-  max-height: 70vh;
 }
 
 .rustore-logo {
@@ -198,61 +166,5 @@ export default {
   background: transparent;
   color: #1E3A8A;
   border: 2px solid #1E3A8A;
-}
-
-.auth-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.auth-button.primary:hover {
-  background: #3B82F6;
-  border-color: #3B82F6;
-}
-
-.auth-button.secondary:hover {
-  background: #1E3A8A;
-  color: #FFFFFF;
-}
-
-@media (max-width: 480px) {
-  .open-board-layout {
-    padding: 15px;
-  }
-
-  .rustore-logo {
-    width: 150px;
-    height: 150px;
-  }
-
-  .welcome-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .welcome-subtitle {
-    font-size: 18px;
-    margin-top: 8px;
-  }
-
-  .actions-section {
-    flex-direction: column;
-    max-width: 300px;
-  }
-
-  .auth-button {
-    max-width: none;
-  }
-}
-
-:global(html) {
-  overflow: hidden;
-}
-
-:global(body) {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
 }
 </style>

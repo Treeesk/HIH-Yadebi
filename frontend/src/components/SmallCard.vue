@@ -3,7 +3,7 @@
 
     <img
         :src="iconUrl"
-        class="w-12 h-12 rounded-2xl object-cover"
+        class="w-12 h-12 rounded-xl object-cover"
     />
 
     <div class="flex flex-col leading-tight">
@@ -25,12 +25,15 @@ export default {
 
   computed: {
     iconUrl() {
-      return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(this.app.app_name)}`
+      // ЕДИНЫЙ СТИЛЬ ИКОНКИ (bottts-neutral)
+      return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(
+          this.app.app_name
+      )}&radius=10&size=96`;
     }
   }
 }
 </script>
 
 <style scoped>
-/* Стиль без границ и теней */
+/* clean */
 </style>

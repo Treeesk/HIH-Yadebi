@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div id="app" class="w-full min-h-screen bg-white overflow-x-hidden">
+    <router-view />
   </div>
 </template>
 
@@ -12,6 +12,11 @@ export default {
 
 <style>
 html, body, #app {
-  background: white !important;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overscroll-behavior-y: contain;
 }
 </style>
