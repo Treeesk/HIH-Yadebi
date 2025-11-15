@@ -195,6 +195,24 @@ paths:
           description: user not found
         '500': 
           description: server-side error
+  /addApp:
+    post:
+      tags:
+        - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addAppReqBody"
+      responses:
+        '200':
+          description: ok
+        '401':
+          description: invalid request
+        '500':
+          description: server-side error
+        '404':
+          description: category or developer not found by id
           
           
           
@@ -271,7 +289,7 @@ components:
                     type: string
                   app_category: 
                     type: string
-                  app_little_icon_link:
+                  app_little_cloud:
                     type: string
           example:
             - category_name: "Популярное"
@@ -279,21 +297,21 @@ components:
                 - app_id: 123
                   app_name: "clash royale"
                   app_category: "Шутер"
-                  app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
                 - app_id: 124
                   app_name: "clash of clans"
                   app_category: "Бродилка"
-                  app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
             - category_name: "Выбор редакции"
               apps:
                 - app_id: 125
                   app_name: "minecraft"
                   app_category: "Песочница"
-                  app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
                 - app_id: 126
                   app_name: "tetris"
                   app_category: "Ретро"
-                  app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
     getAppRespBody:
       type: object
       properties:
@@ -324,13 +342,7 @@ components:
         app_version:
           type: string
           example: 1.0.0
-        app_link_apk:
-          type: string
-          example: disk.yandex.ru/client/d/asf45sadf67as
-        app_link_large_icon:
-          type: string
-          example: disk.yandex.ru/client/d/asf45sadf67asa
-        app_link_screenshots:
+        app_link_cloud:
           type: string
           example: disk.yandex.ru/client/d/asf45sadf67as
         app_created_at:
@@ -356,19 +368,19 @@ components:
             - app_id: 123
               app_name: "clash royale"
               app_category: "Шутер"
-              app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
             - app_id: 124
               app_name: "clash of clans"
               app_category: "Бродилка"
-              app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
             - app_id: 125
               app_name: "minecraft"
               app_category: "Песочница"
-              app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
             - app_id: 126
               app_name: "tetris"
               app_category: "Ретро"
-              app_little_icon_link: "disk.yandex.ru/client/d/asf45sadf67as"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
     getAppReviewsRespBody:
       type: object
       properties:
@@ -447,6 +459,41 @@ components:
         user_email:
           type: string
           example: email@mail.ru
+    addAppReqBody:
+      type: object
+      properties:
+        title:
+          type: string
+          example: clash of clans
+        description: 
+          type: string
+          example: "новая мега топовая игра от нашумевших разработчиков clash of clans уже в сети. скачивай по моей ссылке в описании и упей урвать скин на реактивный истребитель и 20 тысяч серебра"
+        sizeMB:
+          type: number
+          example: 221.2
+        ageRating:
+          type: integer
+          example: 6
+        downloads:
+          type: integer
+          example: 1234
+        version:
+          type: string
+          example: 1.0.0
+        link_cloud:
+          type: string
+          example: "disk.yandex.ru/client/d/asf45sadf67as"
+        developer_id:
+          type: integer
+          example: 123
+        category_id:
+          type: integer
+          example: 4
+        created_at:
+          type: string
+          example: "1 ноября 2011"
+          
+          
     
     
     
