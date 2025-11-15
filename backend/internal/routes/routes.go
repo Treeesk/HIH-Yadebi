@@ -1,8 +1,10 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
+	"hih-yadebi-backend/internal/database"
 	"hih-yadebi-backend/internal/handlers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(
@@ -37,13 +39,16 @@ func SetupRoutes(
 }
 
 func SetupRouter(
-	authHandler *handlers.AuthHandler,
-	storeHandler *handlers.StoreHandler,
-	appHandler *handlers.AppHandler,
-	profileHandler *handlers.ProfileHandler,
+	userRepo *database.UserRepository,
+	appRepo *database.AppRepository,
 ) *gin.Engine {
 
 	r := gin.Default()
+
+	authHandler := handlers.NewAuthHandler(userRepo)
+	storeHandler := handlers.NewStoreHandler(appRepo)
+	appHandler := handlers.NewAppHandler(appRepo)
+	profileHandler := handlers.NewProfileHandler(userRepo)
 
 	SetupRoutes(
 		r,

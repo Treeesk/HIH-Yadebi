@@ -23,7 +23,7 @@ func (r *DeveloperRepository) CreateDeveloper(ctx context.Context, dev *models.D
 
 	return r.DB.QueryRowContext(ctx, query,
 		dev.Name,
-		dev.Password,
+		dev.PasswordHash,
 		dev.Email,
 	).Scan(&dev.ID)
 }
@@ -37,7 +37,7 @@ func (r *DeveloperRepository) GetDeveloperByLogin(ctx context.Context, name stri
 	`
 
 	row := r.DB.QueryRowContext(ctx, query, name)
-	err := row.Scan(&dev.ID, &dev.Name, &dev.Password, &dev.Email)
+	err := row.Scan(&dev.ID, &dev.Name, &dev.PasswordHash, &dev.Email)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
