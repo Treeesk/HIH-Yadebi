@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"hih-yadebi-backend/internal/database"
 	"hih-yadebi-backend/internal/models"
 	"hih-yadebi-backend/internal/utils"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"time"
 
-	"context"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,56 +16,13 @@ type AuthHandler struct {
 	UserRepo *database.UserRepository
 }
 
-func NewAuthHandler(repo *database.UserRepository) *AuthHandler {
-	return &AuthHandler{UserRepo: repo}
+func NewAuthHandler(userRepo *database.UserRepository) *AuthHandler {
+	return &AuthHandler{UserRepo: userRepo}
 }
 
 type AuthRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"" binding:"required"`
-}
-
-type RegisterRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	Name     string `json:"name" binding:"required"`
+	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
-}
-
-func (h *AuthHandler) Login(c *gin.Context) {
-	var req AuthRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Printf("invalid request: %v\n", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	user, err := h.UserRepo.GetUserByEmail(ctx, req.Email)
-	if err != nil {
-		log.Printf("database error: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "database error"})
-		return
-	}
-	if user == nil {
-		log.Printf("user %v not found\n", req.Email)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
-		return
-	}
-
-	if !utils.CheckPasswordHash(req.Password, user.PasswordHash) {
-		log.Printf("wrong password for user %v\n", req.Email)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
-		return
-	}
-
-	token, err := utils.GenerateJWT(user.ID, user.Email)
-	if err != nil {
-		log.Printf("generation token error: %v\n", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "generation token error"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"auth_token": token})
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -75,7 +32,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	existingUser, _ := h.UserRepo.GetUserByEmail(context.Background(), req.Email)
+	existingUser, _ := h.UserRepo.GetUserByUsername(context.Background(), req.Username)
 	if existingUser != nil {
 		log.Printf("user with this username exists\n")
 		c.JSON(http.StatusConflict, gin.H{"error": "user with this username already exists"})
@@ -88,7 +45,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 	user := models.User{
-		Email:        req.Email,
+		Name:         req.Username,
 		PasswordHash: hash,
 		Name:         req.Name,
 	}
@@ -100,9 +57,49 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "creating user error"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"id": user.ID, "username": user.Name, "created_at": user.CreatedAt})
 }
 
-func (h *AuthHandler) ConfirmEmail(c *gin.Context) {
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req AuthRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("invalid request: %v\n", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	user, err := h.UserRepo.GetUserByUsername(ctx, req.Username)
+	if err != nil {
+		log.Printf("database error: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "database error"})
+		return
+	}
+	if user == nil {
+		log.Printf("user %v not found\n", req.Username)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+
+	if !utils.CheckPasswordHash(req.Password, user.PasswordHash) {
+		log.Printf("wrong password for user %v\n", req.Username)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+		return
+	}
+
+	token, err := utils.GenerateJWT(user.ID, user.Name)
+	if err != nil {
+		log.Printf("generation token error: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "generation token error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"auth_token": token})
+	// c.SetCookie("auth_token", token, 3600, "/", "", false, false)
+}
+
+func (h *AuthHandler) Profile(c *gin.Context) {
+	userID := c.GetInt("user_id")
+	username := c.GetString("username")
+	c.JSON(http.StatusOK, gin.H{"user_id": userID, "username": username})
 }
