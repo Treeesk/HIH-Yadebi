@@ -31,7 +31,7 @@ func (h *StoreHandler) GetAppsByCategoryID(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	category_id_int, err := strconv.Atoi(category_id)
-	if err != nil{
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
@@ -39,7 +39,8 @@ func (h *StoreHandler) GetAppsByCategoryID(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
-	}i
+	}
+	c.JSON(http.StatusOK, gin.H{"res": apps})
 }
 func (h *StoreHandler) GetCategories(c *gin.Context) {
 
