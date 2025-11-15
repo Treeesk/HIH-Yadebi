@@ -61,7 +61,7 @@ func (r *AppRepository) GetAppByID(ctx context.Context, id int) (*models.App, er
 	return app, err
 }
 
-func (r *AppRepository) GetAppByCategoryID(ctx context.Context, categoryID int) ([]*models.App, error) {
+func (r *AppRepository) GetAppsByCategoryID(ctx context.Context, categoryID int) ([]*models.App, error) {
 	apps := make([]*models.App, 0)
 
 	query := `
@@ -95,3 +95,11 @@ func (r *AppRepository) GetAppByCategoryID(ctx context.Context, categoryID int) 
 
 	return apps, nil
 }
+
+func (r *AppRepository) IncrementDownloadCount(ctx context.Context, id int) (error) {
+	_, err := r.DB.ExecContext(ctx, `
+		UPDATE apps SET downloads = downloads + 1 WHERE id = $1
+	`, id)
+	return err
+} 
+
