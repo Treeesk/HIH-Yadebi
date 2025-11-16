@@ -75,7 +75,7 @@ func (h *StoreHandler) MainStorePage(c *gin.Context) {
 	// }
 	for _, v := range categories {
 		ctx4, cancel4 := context.WithTimeout(context.Background(), 5*time.Second)
-		appsByCategory, err := h.AppRepo.GetAppByCategoryID(ctx4, v.ID)
+		appsByCategory, err := h.AppRepo.GetAppsByCategoryID(ctx4, v.ID)
 		defer cancel4()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
@@ -123,7 +123,7 @@ func (h *StoreHandler) GetAppsByCategoryID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	apps, err := h.AppRepo.GetAppByCategoryID(ctx, category_id_int)
+	apps, err := h.AppRepo.GetAppsByCategoryID(ctx, category_id_int)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
