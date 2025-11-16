@@ -15,7 +15,7 @@ func SetupRouter(userRepo *database.UserRepository, appRepo *database.AppReposit
 	// Auth routes
 
 	// Apps routes
-	router.GET("/apps/:id/reviews", appsHandler.GetAppReviews)
+	router.GET("/getAppReviews", appsHandler.GetAppReviews)
 	router.GET("/apps/popular", appsHandler.GetPopular)
 	router.GET("/apps/new", appsHandler.GetDateApps)
 	return router

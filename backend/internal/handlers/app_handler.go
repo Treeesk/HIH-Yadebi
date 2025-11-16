@@ -65,7 +65,7 @@ func (h *AppHandler) GetDateApps(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"top_date": top_date})
 }
 func (h *AppHandler) GetAppReviews(c *gin.Context) {
-	idStr := c.Param("id")
+	idStr := c.Query("app_id")
 	appID, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
