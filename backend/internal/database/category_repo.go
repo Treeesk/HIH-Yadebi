@@ -19,25 +19,25 @@ func (r *CategoryRepository) CreateCategory(ctx context.Context, cat *models.Cat
 	return r.DB.QueryRowContext(ctx, query, cat.Title).Scan(&cat.ID)
 }
 
-func (r *CategoryRepository) GetAll(ctx context.Context) ([]models.Category, error) {
+func (r *CategoryRepository) GetAllCategories(ctx context.Context) ([]*models.Category, error) {
 	rows, err := r.DB.QueryContext(ctx, `SELECT id, title FROM categories`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var list []models.Category
+	var list []*models.Category
 	for rows.Next() {
 		var c models.Category
 		if err := rows.Scan(&c.ID, &c.Title); err != nil {
 			return nil, err
 		}
-		list = append(list, c)
+		list = append(list, &c)
 	}
 	return list, nil
 }
 
-func (r *CategoryRepository) GetCategoryByID(ctx context.Context, id int) (*models.Category, error){
+func (r *CategoryRepository) GetCategoryByID(ctx context.Context, id int) (*models.Category, error) {
 	category := &models.Category{}
 
 	query := `

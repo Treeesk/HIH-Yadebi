@@ -24,13 +24,17 @@ type ReviewRequest struct {
 }
 
 func (h *AppHandler) GetAppByID(c *gin.Context) {
-
+	// nuzhno
 }
 
 func (h *AppHandler) GetAppReviews(c *gin.Context) {
-
+	// nuzhno
 }
 
 func (h *AppHandler) AddReview(c *gin.Context) {
+
+}
+
+func (h *AppHandler) AddApp(c *gin.Context) {
 
 }

@@ -19,7 +19,8 @@ func main() {
 
 	userRepo := database.NewUserRepository(db)
 	appRepo := database.NewAppRepository(db)
-	r := routes.SetupRouter(userRepo, appRepo)
+	categoryRepo := database.NewCategoryRepository(db)
+	r := routes.SetupRouter(userRepo, appRepo, categoryRepo)
 
 
 

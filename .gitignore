@@ -57,3 +57,6 @@ coverage
 
 # Vitest
 __screenshots__/
+
+# Go
+go.work

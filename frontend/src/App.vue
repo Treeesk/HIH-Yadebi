@@ -1,84 +1,68 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <router-view />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+<style>
+/* Сбрасываем всё, что может ломать layout */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+/* Корневой html — фиксируем горизонтальный скролл */
+html {
+  width: 100% !important;
+  height: 100% !important;
+  overflow-x: hidden !important;  /* <-- главное */
+  overflow-y: auto !important;
+  background: #f9fafb !important;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+/* Body — только вертикальный скролл, никакого 100vw */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  width: 100% !important;      /* без 100vw */
+  max-width: 100% !important;  /* запрещаем переполнение */
+
+  height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+
+  background: #f9fafb !important;
+
+  /* скрываем скроллбар */
+  scrollbar-width: none !important;      /* Firefox */
+  -ms-overflow-style: none !important;   /* IE/Edge */
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+body::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari/Opera */
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+/* #app — тоже ТОЛЬКО % */
+#app {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+
+  background: #f9fafb !important;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+/* Мобильная адаптация */
+@media (max-width: 767px) {
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 </style>
