@@ -19,10 +19,12 @@
             <input
                 ref="searchInput"
                 v-model="searchQuery"
-                @keyup.enter="performSearch"
+                @keyup.enter="handleEnter"
+                @blur="handleInputBlur"
                 type="text"
                 placeholder="Поиск приложений..."
-                class="w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors outline-none"
+                class="w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors outline-none text-gray-900 placeholder-gray-500"
+                inputmode="search"
             >
 
             <button
@@ -95,34 +97,263 @@ export default {
         { category_id: 20, category_title: "Видео" }
       ],
       searchResults: [],
-      isMobile: false
+      isMobile: false,
+      keyboardInterval: null,
+      shouldKeepKeyboardOpen: true
     }
   },
   mounted() {
-    this.isMobile = window.innerWidth < 768
-    if (this.isMobile && this.$refs.searchInput) {
-      setTimeout(() => this.$refs.searchInput?.focus(), 300)
+    this.isMobile = this.checkIsMobile()
+
+    // ВОССТАНАВЛИВАЕМ СОСТОЯНИЕ ПОИСКА ИЗ sessionStorage
+    this.restoreSearchState()
+
+    // АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ КЛАВИАТУРЫ НА МОБИЛЬНЫХ
+    if (this.isMobile) {
+      this.$nextTick(() => {
+        this.keepKeyboardOpen()
+      })
+    }
+  },
+  beforeUnmount() {
+    // Очищаем интервал при размонтировании компонента
+    if (this.keyboardInterval) {
+      clearInterval(this.keyboardInterval)
     }
   },
   methods: {
-    goBack() { this.$router.push('/') },
-    goToProfile() { alert('Профиль') },
-    performSearch() {
+    checkIsMobile() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          window.innerWidth < 768
+    },
+
+    // ОБРАБОТКА НАЖАТИЯ ENTER
+    handleEnter() {
+      // Выполняем поиск
+      this.performSearch()
+
+      // Скрываем клавиатуру на мобильных устройствах
+      if (this.isMobile) {
+        this.hideKeyboard()
+      }
+    },
+
+    // СКРЫТИЕ КЛАВИАТУРЫ
+    hideKeyboard() {
+      const input = this.$refs.searchInput
+      if (!input) return
+
+      console.log('Hiding keyboard...')
+
+      // Отключаем автоматическое открытие клавиатуры
+      this.shouldKeepKeyboardOpen = false
+
+      // Очищаем интервал автоматического фокуса
+      if (this.keyboardInterval) {
+        clearInterval(this.keyboardInterval)
+        this.keyboardInterval = null
+      }
+
+      // Убираем фокус с инпута
+      input.blur()
+
+      // Для iOS - дополнительно скрываем клавиатуру
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        // На iOS можно попробовать изменить тип инпута
+        const originalType = input.type
+        input.type = 'text'
+        setTimeout(() => {
+          input.type = originalType
+        }, 100)
+      }
+
+      // Для Android - просто blur обычно достаточно
+      if (/Android/.test(navigator.userAgent)) {
+        // Дополнительный blur для надежности
+        setTimeout(() => {
+          input.blur()
+        }, 100)
+      }
+    },
+
+    // ВОССТАНОВЛЕНИЕ СОСТОЯНИЯ ПОИСКА
+    restoreSearchState() {
+      const savedState = sessionStorage.getItem('searchState')
+      if (savedState) {
+        try {
+          const state = JSON.parse(savedState)
+          this.searchQuery = state.query || ''
+          this.searchResults = state.results || []
+          console.log('Search state restored:', state)
+        } catch (error) {
+          console.error('Error restoring search state:', error)
+        }
+      }
+    },
+
+    // СОХРАНЕНИЕ СОСТОЯНИЯ ПОИСКА
+    saveSearchState() {
+      const state = {
+        query: this.searchQuery,
+        results: this.searchResults
+      }
+      sessionStorage.setItem('searchState', JSON.stringify(state))
+    },
+
+    // ОЧИСТКА СОХРАНЕННОГО СОСТОЯНИЯ
+    clearSearchState() {
+      sessionStorage.removeItem('searchState')
+    },
+
+    // МЕТОД ДЛЯ ПОСТОЯННОГО УДЕРЖАНИЯ КЛАВИАТУРЫ
+    keepKeyboardOpen() {
+      const input = this.$refs.searchInput
+      if (!input) {
+        console.log('Input not found')
+        return
+      }
+
+      console.log('Keeping keyboard open...')
+
+      // Функция для фокусировки
+      const focusInput = () => {
+        if (document.activeElement !== input && this.shouldKeepKeyboardOpen) {
+          input.focus()
+          input.setSelectionRange(input.value.length, input.value.length)
+        }
+      }
+
+      // Сразу фокусируем
+      focusInput()
+
+      // Для iOS - специальная обработка
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        this.handleIOSKeyboard(input, focusInput)
+      } else {
+        // Для Android и других устройств
+        this.handleAndroidKeyboard(input, focusInput)
+      }
+    },
+
+    // ОБРАБОТКА ДЛЯ iOS
+    handleIOSKeyboard(input, focusInput) {
+      // Метод 1: Множественный фокус с задержками
+      setTimeout(focusInput, 100)
+      setTimeout(focusInput, 300)
+      setTimeout(focusInput, 500)
+      setTimeout(focusInput, 1000)
+
+      // Метод 2: Интервал для постоянного фокуса
+      this.keyboardInterval = setInterval(focusInput, 2000)
+    },
+
+    // ОБРАБОТКА ДЛЯ ANDROID
+    handleAndroidKeyboard(input, focusInput) {
+      // Метод 1: Быстрое переключение фокуса
+      setTimeout(() => {
+        input.blur()
+        setTimeout(focusInput, 50)
+      }, 200)
+
+      // Метод 2: Множественный фокус
+      setTimeout(focusInput, 400)
+      setTimeout(focusInput, 800)
+      setTimeout(focusInput, 1200)
+
+      // Метод 3: Интервал для постоянного фокуса
+      this.keyboardInterval = setInterval(focusInput, 1500)
+    },
+
+    // ОБРАБОТЧИК ПОТЕРИ ФОКУСА
+    handleInputBlur() {
+      if (this.isMobile && this.shouldKeepKeyboardOpen) {
+        console.log('Input lost focus, refocusing...')
+        // Немедленно возвращаем фокус
+        setTimeout(() => {
+          const input = this.$refs.searchInput
+          if (input && document.activeElement !== input && this.shouldKeepKeyboardOpen) {
+            input.focus()
+          }
+        }, 100)
+      }
+    },
+
+    goBack() {
+      // Очищаем интервал перед уходом
+      if (this.keyboardInterval) {
+        clearInterval(this.keyboardInterval)
+      }
+      this.$router.push('/')
+    },
+
+    goToProfile() {
+      alert('Профиль')
+    },
+
+    async performSearch() {
       if (!this.searchQuery.trim()) {
         this.clearSearch()
         return
       }
+
       this.isLoading = true
-      setTimeout(() => {
+
+      try {
+        // ЗАГЛУШКА ДЛЯ ДЕМОНСТРАЦИИ - ЗАМЕНИТЕ НА РЕАЛЬНЫЙ API
+        console.log('Searching for:', this.searchQuery)
+
+        // Имитация API запроса
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        // ЗАГЛУШЕЧНЫЕ ДАННЫЕ ДЛЯ ТЕСТИРОВАНИЯ
         this.searchResults = [
-          { app_id: 1, title: `${this.searchQuery} Game`, developer: "Game Studio", category: "Игры" },
-          { app_id: 2, title: `${this.searchQuery} App`, developer: "App Corp", category: "Утилиты" },
+          {
+            app_id: 1,
+            app_name: `${this.searchQuery} Game`,
+            app_category: "Игры",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=game&scale=90&size=200&radius=20&backgroundColor=b6e3f4"
+          },
+          {
+            app_id: 2,
+            app_name: `${this.searchQuery} App`,
+            app_category: "Утилиты",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=app&scale=90&size=200&radius=20&backgroundColor=ffdfbf"
+          },
+          {
+            app_id: 3,
+            app_name: `${this.searchQuery} Tool`,
+            app_category: "Инструменты",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=tool&scale=90&size=200&radius=20&backgroundColor=c0aede"
+          }
         ]
+
+        // СОХРАНЯЕМ РЕЗУЛЬТАТЫ ПОИСКА
+        this.saveSearchState()
+
+        this.$emit('search-completed', {
+          query: this.searchQuery,
+          results: this.searchResults
+        })
+
+      } catch (error) {
+        console.error('Ошибка при поиске:', error)
+        this.searchResults = []
+      } finally {
         this.isLoading = false
-      }, 500)
+      }
     },
-    clearSearch() { this.searchQuery = ''; this.searchResults = [] }
-  }
+
+    clearSearch() {
+      this.searchQuery = '';
+      this.searchResults = []
+      // ВКЛЮЧАЕМ АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ КЛАВИАТУРЫ ПРИ ОЧИСТКЕ
+      this.shouldKeepKeyboardOpen = true
+      // ОЧИЩАЕМ СОХРАНЕННОЕ СОСТОЯНИЕ ПРИ ОЧИСТКЕ ПОИСКА
+      this.clearSearchState()
+      this.$emit('search-cleared')
+    }
+  },
+  emits: ['search-completed', 'search-cleared']
 }
 </script>
 
@@ -138,13 +369,39 @@ export default {
 .main-content {
   flex: 1;
   width: 100%;
-  /* НЕТ overflow - скроллит body */
 }
 
 /* Для мобильных - растягиваем на всю ширину */
 @media (max-width: 767px) {
   .search-layout {
     width: 100%;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+/* Важные стили для работы клавиатуры */
+input {
+  font-size: 16px !important;
+  transform: translateZ(0);
+}
+
+/* Убираем outline для мобильных чтобы не мешал */
+@media (max-width: 767px) {
+  input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+/* Для Safari на iOS */
+@supports (-webkit-touch-callout: none) {
+  input {
+    font-size: 16px !important;
   }
 }
 </style>
