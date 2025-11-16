@@ -1,0 +1,500 @@
+openapi: 3.0.4
+info:
+  title: hih yadebi openapi
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginRequestBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginOKResponseBody"
+          description: vse ok, vozvrashayu jwt token
+        '400':
+          description: nepravilniy zapros
+        '500':
+          description: kakaya-to huynya na beke, skoree vsego hz
+        '401':
+          description: libo neverniy parol, libo user ne nayden, napishu vam v oshibke
+  /register:
+    post:
+      tags: 
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/registerReqBody"
+        required: true
+      responses:
+        '200':
+          description: vse ok, ozhiday kod s pochti
+        '400':
+          description: invalid request
+        '409':
+          description: user already with this username already exists
+        '500':
+          description: server-side error
+  /register/confirmEmail:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/registerConfirmReqBody"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/registerConfirmRespBody"
+          description: ok
+        '400':
+          description: invalid request
+        '401':
+          description: invalid code
+        '410':
+          description: code expired
+        '500':
+          description: server-side error
+  /mainStorePage:
+    get:
+      tags:
+        - store
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/mainStorePageRespBody"
+          description: ok
+        '500':
+          description: server-side error
+  /getApp:
+    get:
+      tags:
+        - app
+      parameters:
+        - name: app_id
+          in: query
+          schema:
+            type: integer
+            example: 123
+      responses:
+          '200':
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/getAppRespBody"
+            description: ok
+          '404':
+            description: app not found
+          "500":
+            description: server-side error
+  /getAppsByCategory:
+    get:
+      tags:
+        - store
+      parameters:
+        - name: category_id
+          in: query
+          schema: 
+            type: integer
+            example: 123
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getAppsByCategoryRespBody"
+          description: ok
+        '404':
+          description: category not found
+        '500':
+          description: server-side error
+  /getAppReviews:
+    get:
+      tags:
+        - app
+      parameters:
+        - name: app_id
+          in: query
+          schema:
+            type: integer
+            example: 123
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getAppReviewsRespBody"
+          description: ok
+        '404':
+          description: app not found
+        '500':
+          description: server-side error
+  /addReview:
+    post:
+      tags: 
+        - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addReviewReqBody"
+      responses:
+        '200':
+          description: ok
+        '404':
+          description: app or user not found
+        '500':
+          description: server-side error
+  /getCategories:
+    get:
+      tags:
+        - store
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getCategoriesRespBody"
+          description: ok
+        '500':
+          description: server-side error
+  /getProfile:
+    get:
+      tags: 
+        - profile
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: integer
+            example: 12
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getProfileRespBody"
+          description: ok
+        '404':
+          description: user not found
+        '500': 
+          description: server-side error
+  /addApp:
+    post:
+      tags:
+        - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/addAppReqBody"
+      responses:
+        '200':
+          description: ok
+        '401':
+          description: invalid request
+        '500':
+          description: server-side error
+        '404':
+          description: category or developer not found by id
+          
+          
+          
+components:
+  schemas:
+    loginRequestBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: email@mail.ru
+        password:
+          type: string
+          example: password
+      required:
+        - email
+        - password
+    loginOKResponseBody:
+      type: object
+      properties:
+        auth_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lb3V0IjoxNzYzMDQzMjYyLCJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6InVzZXJuYW1lNCJ9.E2jr3pYqekGad0Bk_wiBXxa4weTxZtfH_0AWuQUiq78
+    registerReqBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: email@mail.ru
+        name:
+          type: string
+          example: danil mitroshin
+        password:
+          type: string
+          example: password
+      required:
+        - email
+        - name
+        - password
+    registerConfirmReqBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: email@mail.ru
+        code: 
+          type: integer
+          example: 123456
+      required:
+        - email
+        - code
+    registerConfirmRespBody:
+      type: object
+      properties:
+        auth_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aW1lb3V0IjoxNzYzMDQzMjYyLCJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6InVzZXJuYW1lNCJ9.E2jr3pYqekGad0Bk_wiBXxa4weTxZtfH_0AWuQUiq78
+    mainStorePageRespBody:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              category_name: 
+                type: string
+              apps:
+                type: object
+                properties:
+                  app_id: 
+                    type: integer
+                  app_name: 
+                    type: string
+                  app_category: 
+                    type: string
+                  app_little_cloud:
+                    type: string
+          example:
+            - category_name: "Популярное"
+              apps:
+                - app_id: 123
+                  app_name: "clash royale"
+                  app_category: "Шутер"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+                - app_id: 124
+                  app_name: "clash of clans"
+                  app_category: "Бродилка"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+            - category_name: "Выбор редакции"
+              apps:
+                - app_id: 125
+                  app_name: "minecraft"
+                  app_category: "Песочница"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+                - app_id: 126
+                  app_name: "tetris"
+                  app_category: "Ретро"
+                  app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+    getAppRespBody:
+      type: object
+      properties:
+        app_id:
+          type: integer
+          example: 123
+        app_title:
+          type: string
+          example: clash royale
+        app_category:
+          type: string
+          example: "Шутер"
+        app_description:
+          type: string
+          example: "новая мега топовая игра от нашумевших разработчиков clash of clans уже в сети. скачивай по моей ссылке в описании и упей урвать скин на реактивный истребитель и 20 тысяч серебра"
+        app_size:
+          type: number
+          example: 205.3
+        app_age_rating:
+          type: integer
+          example: 16
+        app_developer_id:
+          type: integer
+          example: 12
+        app_count_downloas:
+          type: integer
+          example: 1200
+        app_version:
+          type: string
+          example: 1.0.0
+        app_link_cloud:
+          type: string
+          example: disk.yandex.ru/client/d/asf45sadf67as
+        app_created_at:
+          type: string
+          example: 1 ноября 2011
+    getAppsByCategoryRespBody:
+      type: object
+      properties:
+        apps:
+          type: array
+          items:
+            type: object
+            properties:
+              app_id: 
+                type: integer
+              app_name: 
+                type: string
+              app_category: 
+                type: string
+              app_little_icon_link:
+                type: string
+          example:
+            - app_id: 123
+              app_name: "clash royale"
+              app_category: "Шутер"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+            - app_id: 124
+              app_name: "clash of clans"
+              app_category: "Бродилка"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+            - app_id: 125
+              app_name: "minecraft"
+              app_category: "Песочница"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+            - app_id: 126
+              app_name: "tetris"
+              app_category: "Ретро"
+              app_little_cloud: "disk.yandex.ru/client/d/asf45sadf67as"
+    getAppReviewsRespBody:
+      type: object
+      properties:
+        reviews:
+          type: array
+          items:
+            type: object
+            properties:
+              review_id:
+                type: integer
+              user_id:
+                type: integer
+              app_id:
+                type: integer
+              score:
+                type: integer
+              comment:
+                type: string
+          example:
+            - review_id: 1234
+              user_id: 12
+              app_id: 123
+              score: 1
+              comment: huynya prilozhenie
+            - review_id: 1235
+              user_id: 13
+              app_id: 123
+              score: 5
+              comment: top scachal mame pape kotu
+    addReviewReqBody:
+      type: object
+      properties:
+        app_id:
+          type: integer
+          example: 123
+        user_id:
+          type: integer
+          example: 12
+        score:
+          type: integer
+          example: 5
+        comment: 
+          type: string
+          example: "ohuennoe prilozhenie"
+        created_at:
+          type: string
+          example: 1 ноября 2011
+    getCategoriesRespBody:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              category_id:
+                type: integer
+              category_title:
+                type: string
+          example: 
+            - category_id: 1
+              category_title: "Шутеры"
+            - category_id: 2
+              category_title: "Банки"
+            - category_id: 3
+              category_title: "Мессенджеры"
+    getProfileRespBody:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 12
+        user_name:
+          type: string
+          example: mitroshin danil
+        user_email:
+          type: string
+          example: email@mail.ru
+    addAppReqBody:
+      type: object
+      properties:
+        title:
+          type: string
+          example: clash of clans
+        description: 
+          type: string
+          example: "новая мега топовая игра от нашумевших разработчиков clash of clans уже в сети. скачивай по моей ссылке в описании и упей урвать скин на реактивный истребитель и 20 тысяч серебра"
+        sizeMB:
+          type: number
+          example: 221.2
+        ageRating:
+          type: integer
+          example: 6
+        downloads:
+          type: integer
+          example: 1234
+        version:
+          type: string
+          example: 1.0.0
+        link_cloud:
+          type: string
+          example: "disk.yandex.ru/client/d/asf45sadf67as"
+        developer_id:
+          type: integer
+          example: 123
+        category_id:
+          type: integer
+          example: 4
+        created_at:
+          type: string
+          example: "1 ноября 2011"
+          
+          
+    
+    
+    
+    
