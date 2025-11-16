@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"hih-yadebi-backend/internal/database"
-	"hih-yadebi-backend/internal/models"
+	// "hih-yadebi-backend/internal/models"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -17,8 +17,24 @@ type StoreHandler struct {
 	CategoryRepo *database.CategoryRepository
 }
 
+type StorePageResponse struct {
+	Categories []Category `json:"categories"`
+}
+
+type Category struct {
+	CategoryName string      `json:"category_name"`
+	Apps         []LittleApp `json:"apps"`
+}
+
 func NewStoreHandler(appRepo *database.AppRepository, categoryRepo *database.CategoryRepository) *StoreHandler {
 	return &StoreHandler{AppRepo: appRepo, CategoryRepo: categoryRepo}
+}
+
+type LittleApp struct {
+	App_id        int    `json:"app_id"`
+	App_name      string `json:"app_name"`
+	App_category  string `json:"app_category"`
+	App_linkCloud string `json:"app_link_cloud"`
 }
 
 func (h *StoreHandler) MainStorePage(c *gin.Context) {
@@ -29,25 +45,23 @@ func (h *StoreHandler) MainStorePage(c *gin.Context) {
 		return
 	}
 	ctx1, cancel1 := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel1()
 	mostPopularApps, err := h.AppRepo.GetMostPopularApps(ctx1, limitApps_int)
+	defer cancel1()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
 	}
 	ctx2, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel2()
 	mostNewApps, err := h.AppRepo.GetMostNewApps(ctx2, limitApps_int)
+	defer cancel2()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
 	}
-	respBody := make(map[string][]*models.App)
-	respBody["Самые популярные приложения"] = mostPopularApps
-	respBody["Новинки"] = mostNewApps
+	respBody := []Category{}
 	ctx3, cancel3 := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel3()
 	categories, err := h.CategoryRepo.GetAllCategories(ctx3)
+	defer cancel3()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 		return
@@ -61,14 +75,38 @@ func (h *StoreHandler) MainStorePage(c *gin.Context) {
 	// }
 	for _, v := range categories {
 		ctx4, cancel4 := context.WithTimeout(context.Background(), 5*time.Second)
-		cancel4()
 		appsByCategory, err := h.AppRepo.GetAppByCategoryID(ctx4, v.ID)
+		defer cancel4()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "server-side error"})
 			return
 		}
-		respBody[v.Title] = appsByCategory
+		littleAppsByCategory := Category{}
+		littleAppsByCategory.CategoryName = v.Title
+		for _, vv := range appsByCategory {
+			littleAppsByCategory.Apps = append(littleAppsByCategory.Apps,
+				LittleApp{App_id: vv.ID, App_name: vv.Title, App_category: v.Title, App_linkCloud: vv.LinkCloud})
+		}
+		respBody = append(respBody, littleAppsByCategory)
 	}
+	littleMostPopularApps := Category{}
+	for _, v := range mostPopularApps {
+		categoryTitle, _ := h.CategoryRepo.GetCategoryByID(context.Background(), v.CategoryID)
+		littleMostPopularApps.Apps = append(littleMostPopularApps.Apps,
+			LittleApp{App_id: v.ID, App_name: v.Title, App_category: categoryTitle.Title, App_linkCloud: v.LinkCloud})
+	}
+	littleMostPopularApps.CategoryName = "Самые популярные приложения"
+	respBody = append(respBody, littleMostPopularApps)
+	littleMostNewApps := Category{}
+	for _, v := range mostNewApps {
+		categoryTitle, _ := h.CategoryRepo.GetCategoryByID(context.Background(), v.CategoryID)
+		littleMostNewApps.Apps = append(littleMostNewApps.Apps,
+			LittleApp{App_id: v.ID, App_name: v.Title, App_category: categoryTitle.Title, App_linkCloud: v.LinkCloud})
+	}
+	// respBody["Новинки"] = littleMostNewApps
+	littleMostNewApps.CategoryName = "Новинки"
+	respBody = append(respBody, littleMostNewApps)
+	// respBody = append(respBody, map[string][]*LittleApp{"Новинки": littleMostNewApps})
 	c.JSON(http.StatusOK, gin.H{"categories": respBody})
 }
 
