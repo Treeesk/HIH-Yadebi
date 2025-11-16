@@ -1,9 +1,20 @@
 <template>
-  <div class="flex items-center py-3 w-full active:opacity-70" @click="openApp">
+  <div class="flex items-center py-3 w-full active:opacity-70 desktop-app-row" @click="openApp">
 
     <!-- ICON -->
     <div class="w-14 h-14 overflow-hidden rounded-2xl bg-gray-200 flex-shrink-0">
-      <img :src="iconUrl" class="w-full h-full object-cover" />
+      <img
+          v-if="app.app_little_icon_link"
+          :src="`https://${app.app_little_icon_link}`"
+          :alt="app.app_name"
+          class="w-full h-full object-cover"
+      >
+      <img
+          v-else
+          :src="iconUrl"
+          :alt="app.app_name"
+          class="w-full h-full object-cover"
+      >
     </div>
 
     <!-- TEXT -->
@@ -38,14 +49,21 @@ export default {
 
   methods: {
     openApp() {
+      // Переход на страницу деталей приложения с передачей app_id
       this.$router.push({
         name: "app-detail",
         params: { id: this.app.app_id }
       });
     },
+
     download() {
       console.log("Download:", this.app.app_name);
+      // Здесь можно добавить логику скачивания
     }
   }
 }
 </script>
+
+<style scoped>
+/* Стили остаются без изменений */
+</style>

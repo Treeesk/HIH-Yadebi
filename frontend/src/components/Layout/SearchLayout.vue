@@ -1,14 +1,13 @@
 <template>
-  <div class="search-layout min-h-screen bg-gray-50">
+  <div class="search-layout">
     <!-- Хедер с поиском -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div class="w-full px-4 py-3">
         <div class="flex items-center gap-3">
           <!-- Кнопка назад -->
           <button
               @click="goBack"
-              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:bg-gray-200"
-              aria-label="Назад"
+              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -20,17 +19,18 @@
             <input
                 ref="searchInput"
                 v-model="searchQuery"
-                @keyup.enter="performSearch"
+                @keyup.enter="handleEnter"
+                @blur="handleInputBlur"
                 type="text"
                 placeholder="Поиск приложений..."
-                class="w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors outline-none text-gray-800 placeholder-gray-500"
+                class="w-full px-4 py-3 bg-gray-100 rounded-2xl border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors outline-none text-gray-900 placeholder-gray-500"
+                inputmode="search"
             >
 
-            <!-- Кнопка очистки -->
             <button
                 v-if="searchQuery"
                 @click="clearSearch"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -38,11 +38,9 @@
             </button>
           </div>
 
-          <!-- Иконка пользователя -->
           <button
               @click="goToProfile"
-              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:bg-gray-200"
-              aria-label="Профиль"
+              class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
           >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -52,9 +50,9 @@
       </div>
     </header>
 
-    <!-- Основной контент -->
-    <main class="w-full h-[calc(100vh-80px)] overflow-y-auto">
-      <div :class="isMobile ? 'w-full' : 'container mx-auto px-4'">
+    <!-- Основной контент на ВЕСЬ ЭКРАН -->
+    <main class="main-content">
+      <div :class="isMobile ? 'w-full' : 'w-full max-w-7xl mx-auto px-4'">
         <slot
             :search-query="searchQuery"
             :is-loading="isLoading"
@@ -99,21 +97,28 @@ export default {
         { category_id: 20, category_title: "Видео" }
       ],
       searchResults: [],
-      isMobile: false
+      isMobile: false,
+      keyboardInterval: null,
+      shouldKeepKeyboardOpen: true
     }
   },
   mounted() {
-    // Определяем тип устройства
     this.isMobile = this.checkIsMobile()
 
-    // Фокус на поле ввода на мобильных устройствах
-    if (this.isMobile && this.$refs.searchInput) {
-      setTimeout(() => {
-        this.$refs.searchInput.focus()
-        setTimeout(() => {
-          this.$refs.searchInput.focus()
-        }, 100)
-      }, 300)
+    // ВОССТАНАВЛИВАЕМ СОСТОЯНИЕ ПОИСКА ИЗ sessionStorage
+    this.restoreSearchState()
+
+    // АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ КЛАВИАТУРЫ НА МОБИЛЬНЫХ
+    if (this.isMobile) {
+      this.$nextTick(() => {
+        this.keepKeyboardOpen()
+      })
+    }
+  },
+  beforeUnmount() {
+    // Очищаем интервал при размонтировании компонента
+    if (this.keyboardInterval) {
+      clearInterval(this.keyboardInterval)
     }
   },
   methods: {
@@ -122,15 +127,170 @@ export default {
           window.innerWidth < 768
     },
 
+    // ОБРАБОТКА НАЖАТИЯ ENTER
+    handleEnter() {
+      // Выполняем поиск
+      this.performSearch()
+
+      // Скрываем клавиатуру на мобильных устройствах
+      if (this.isMobile) {
+        this.hideKeyboard()
+      }
+    },
+
+    // СКРЫТИЕ КЛАВИАТУРЫ
+    hideKeyboard() {
+      const input = this.$refs.searchInput
+      if (!input) return
+
+      console.log('Hiding keyboard...')
+
+      // Отключаем автоматическое открытие клавиатуры
+      this.shouldKeepKeyboardOpen = false
+
+      // Очищаем интервал автоматического фокуса
+      if (this.keyboardInterval) {
+        clearInterval(this.keyboardInterval)
+        this.keyboardInterval = null
+      }
+
+      // Убираем фокус с инпута
+      input.blur()
+
+      // Для iOS - дополнительно скрываем клавиатуру
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        // На iOS можно попробовать изменить тип инпута
+        const originalType = input.type
+        input.type = 'text'
+        setTimeout(() => {
+          input.type = originalType
+        }, 100)
+      }
+
+      // Для Android - просто blur обычно достаточно
+      if (/Android/.test(navigator.userAgent)) {
+        // Дополнительный blur для надежности
+        setTimeout(() => {
+          input.blur()
+        }, 100)
+      }
+    },
+
+    // ВОССТАНОВЛЕНИЕ СОСТОЯНИЯ ПОИСКА
+    restoreSearchState() {
+      const savedState = sessionStorage.getItem('searchState')
+      if (savedState) {
+        try {
+          const state = JSON.parse(savedState)
+          this.searchQuery = state.query || ''
+          this.searchResults = state.results || []
+          console.log('Search state restored:', state)
+        } catch (error) {
+          console.error('Error restoring search state:', error)
+        }
+      }
+    },
+
+    // СОХРАНЕНИЕ СОСТОЯНИЯ ПОИСКА
+    saveSearchState() {
+      const state = {
+        query: this.searchQuery,
+        results: this.searchResults
+      }
+      sessionStorage.setItem('searchState', JSON.stringify(state))
+    },
+
+    // ОЧИСТКА СОХРАНЕННОГО СОСТОЯНИЯ
+    clearSearchState() {
+      sessionStorage.removeItem('searchState')
+    },
+
+    // МЕТОД ДЛЯ ПОСТОЯННОГО УДЕРЖАНИЯ КЛАВИАТУРЫ
+    keepKeyboardOpen() {
+      const input = this.$refs.searchInput
+      if (!input) {
+        console.log('Input not found')
+        return
+      }
+
+      console.log('Keeping keyboard open...')
+
+      // Функция для фокусировки
+      const focusInput = () => {
+        if (document.activeElement !== input && this.shouldKeepKeyboardOpen) {
+          input.focus()
+          input.setSelectionRange(input.value.length, input.value.length)
+        }
+      }
+
+      // Сразу фокусируем
+      focusInput()
+
+      // Для iOS - специальная обработка
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        this.handleIOSKeyboard(input, focusInput)
+      } else {
+        // Для Android и других устройств
+        this.handleAndroidKeyboard(input, focusInput)
+      }
+    },
+
+    // ОБРАБОТКА ДЛЯ iOS
+    handleIOSKeyboard(input, focusInput) {
+      // Метод 1: Множественный фокус с задержками
+      setTimeout(focusInput, 100)
+      setTimeout(focusInput, 300)
+      setTimeout(focusInput, 500)
+      setTimeout(focusInput, 1000)
+
+      // Метод 2: Интервал для постоянного фокуса
+      this.keyboardInterval = setInterval(focusInput, 2000)
+    },
+
+    // ОБРАБОТКА ДЛЯ ANDROID
+    handleAndroidKeyboard(input, focusInput) {
+      // Метод 1: Быстрое переключение фокуса
+      setTimeout(() => {
+        input.blur()
+        setTimeout(focusInput, 50)
+      }, 200)
+
+      // Метод 2: Множественный фокус
+      setTimeout(focusInput, 400)
+      setTimeout(focusInput, 800)
+      setTimeout(focusInput, 1200)
+
+      // Метод 3: Интервал для постоянного фокуса
+      this.keyboardInterval = setInterval(focusInput, 1500)
+    },
+
+    // ОБРАБОТЧИК ПОТЕРИ ФОКУСА
+    handleInputBlur() {
+      if (this.isMobile && this.shouldKeepKeyboardOpen) {
+        console.log('Input lost focus, refocusing...')
+        // Немедленно возвращаем фокус
+        setTimeout(() => {
+          const input = this.$refs.searchInput
+          if (input && document.activeElement !== input && this.shouldKeepKeyboardOpen) {
+            input.focus()
+          }
+        }, 100)
+      }
+    },
+
     goBack() {
+      // Очищаем интервал перед уходом
+      if (this.keyboardInterval) {
+        clearInterval(this.keyboardInterval)
+      }
       this.$router.push('/')
     },
 
     goToProfile() {
-      alert('Переход в профиль пользователя')
+      alert('Профиль')
     },
 
-    performSearch() {
+    async performSearch() {
       if (!this.searchQuery.trim()) {
         this.clearSearch()
         return
@@ -138,35 +298,59 @@ export default {
 
       this.isLoading = true
 
-      setTimeout(() => {
+      try {
+        // ЗАГЛУШКА ДЛЯ ДЕМОНСТРАЦИИ - ЗАМЕНИТЕ НА РЕАЛЬНЫЙ API
+        console.log('Searching for:', this.searchQuery)
+
+        // Имитация API запроса
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        // ЗАГЛУШЕЧНЫЕ ДАННЫЕ ДЛЯ ТЕСТИРОВАНИЯ
         this.searchResults = [
-          { app_id: 1, title: `${this.searchQuery} Game`, developer: "Game Studio", category: "Игры" },
-          { app_id: 2, title: `${this.searchQuery} App`, developer: "App Corp", category: "Утилиты" },
-          { app_id: 3, title: `${this.searchQuery} Tool`, developer: "Tool Inc", category: "Инструменты" },
-          { app_id: 4, title: `${this.searchQuery} Messenger`, developer: "Message Corp", category: "Мессенджеры" },
-          { app_id: 5, title: `${this.searchQuery} Bank`, developer: "Bank Inc", category: "Банки" },
-          { app_id: 6, title: `${this.searchQuery} Music`, developer: "Music Corp", category: "Музыка" }
+          {
+            app_id: 1,
+            app_name: `${this.searchQuery} Game`,
+            app_category: "Игры",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=game&scale=90&size=200&radius=20&backgroundColor=b6e3f4"
+          },
+          {
+            app_id: 2,
+            app_name: `${this.searchQuery} App`,
+            app_category: "Утилиты",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=app&scale=90&size=200&radius=20&backgroundColor=ffdfbf"
+          },
+          {
+            app_id: 3,
+            app_name: `${this.searchQuery} Tool`,
+            app_category: "Инструменты",
+            app_little_icon_link: "https://api.dicebear.com/7.x/icons/svg?seed=tool&scale=90&size=200&radius=20&backgroundColor=c0aede"
+          }
         ]
-        this.isLoading = false
+
+        // СОХРАНЯЕМ РЕЗУЛЬТАТЫ ПОИСКА
+        this.saveSearchState()
 
         this.$emit('search-completed', {
           query: this.searchQuery,
           results: this.searchResults
         })
-      }, 500)
+
+      } catch (error) {
+        console.error('Ошибка при поиске:', error)
+        this.searchResults = []
+      } finally {
+        this.isLoading = false
+      }
     },
 
     clearSearch() {
-      this.searchQuery = ''
+      this.searchQuery = '';
       this.searchResults = []
+      // ВКЛЮЧАЕМ АВТОМАТИЧЕСКОЕ ОТКРЫТИЕ КЛАВИАТУРЫ ПРИ ОЧИСТКЕ
+      this.shouldKeepKeyboardOpen = true
+      // ОЧИЩАЕМ СОХРАНЕННОЕ СОСТОЯНИЕ ПРИ ОЧИСТКЕ ПОИСКА
+      this.clearSearchState()
       this.$emit('search-cleared')
-    }
-  },
-  watch: {
-    searchQuery(newQuery) {
-      if (!newQuery.trim()) {
-        this.clearSearch()
-      }
     }
   },
   emits: ['search-completed', 'search-cleared']
@@ -175,39 +359,49 @@ export default {
 
 <style scoped>
 .search-layout {
+  width: 100vw;
   min-height: 100vh;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Убираем ВСЕ отступы на мобильных */
+.main-content {
+  flex: 1;
+  width: 100%;
+}
+
+/* Для мобильных - растягиваем на всю ширину */
 @media (max-width: 767px) {
   .search-layout {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    width: 100%;
   }
 
-  main {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 }
 
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar {
-  width: 4px;
+/* Важные стили для работы клавиатуры */
+input {
+  font-size: 16px !important;
+  transform: translateZ(0);
 }
 
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 2px;
+/* Убираем outline для мобильных чтобы не мешал */
+@media (max-width: 767px) {
+  input:focus {
+    outline: none;
+    box-shadow: none;
+  }
 }
 
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 2px;
-}
-
-.h-\[calc\(100vh-80px\)\]::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Для Safari на iOS */
+@supports (-webkit-touch-callout: none) {
+  input {
+    font-size: 16px !important;
+  }
 }
 </style>
